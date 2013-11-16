@@ -12,9 +12,15 @@ module controller
 	input wire sbytes_finished,
 	input wire srows_finished,
 	input wire mcol_finished,
+	input wire around_finished,
 	output reg HRESP,
-	output reg HWDATA,
-	output reg HREADYOUT
+	//output reg HWDATA,
+	output reg HREADYOUT,
+	output reg keyex_enable,
+	output reg sbytes_enable,
+	output reg srows_enable,
+	output reg mcol_enable,
+  output reg around_enable
 );
 
 	typedef enum bit [4:0] {IDLEk, RADDRk, WAITk, READDATAk, IDLE, RADDR, WAIT, READDATA, CHECK, KEYEX, SBYTES, SROWS, MCOL, AROUND, DONE, SEND} stateType;
@@ -28,7 +34,7 @@ module controller
 		end
 	end
 
-	always@(state, addrMatch, HSELx, mWrite, dataReady, mRead, finished, keyxp_finished, sbytes_finished, srows_finished, mcol_finished) begin
+	always@(state, addrMatch, HSELx, mWrite, dataReady, mRead, finished, keyxp_finished, sbytes_finished, srows_finished, mcol_finished, around_finished) begin
 		nextstate = state;
 		case(state)
 			IDLEk:
@@ -113,7 +119,7 @@ module controller
 			end
 			AROUND:
 			begin
-				if(mcol_finished == 1'b1) begin
+				if(around_finished == 1'b1) begin
 					nextstate = CHECK;
 				end
 			end
@@ -131,4 +137,36 @@ module controller
 	always@(state) begin
 		HRESP = 1'b0;
 		HREADYOUT = 1'b0;
-		
+		keyexp_enable = 1'b0;
+		srows_enable = 1'b0;
+		sbytes_enable = 1'b0;
+    around_enable = 1'b0;
+    mcol_enable = 1'b0;
+    case(state) begin
+      KEYEXP:
+      begin
+        keyexp_enable = 1'b1;
+      end
+      SBYTES:
+      begin
+        sbytes_enable = 1'b1;
+      end
+      SROWS:
+      begin
+        srows_enable = 1'b1;
+      end
+      MCOL:
+      begin
+        mcol_enable = 1'b1;
+      end
+      AROUND:
+      begin
+        around_enable = 1'b1;
+      end
+      DONE:
+      begin
+        HREADYOUT = 1'b1;
+      end
+    endcase
+  end
+endmodule
