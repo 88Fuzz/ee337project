@@ -1,0 +1,26 @@
+module HCLK_edgedet
+(
+  input wire clk,
+  input wire n_rst,
+  input wire HCLK,
+  output wire HCLK_rise,
+  output wire HCLK_fall
+);
+
+assign HCLK_rise=curr & (curr & ~past);
+assign HCLK_fall=~curr & (curr & ~past);
+
+always @(posedge clk, negedge n_rst) begin
+  if(n_rst==0) begin
+    past<=1;
+    curr<=1;
+    future<=1;
+  end else begin
+    past<=curr;
+    curr<=future;
+    future<=HCLK;
+  end
+end
+
+endmodule
+  
