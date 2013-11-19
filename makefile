@@ -16,7 +16,7 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 # (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-COMPONENT_FILES	:= on_chip_sram.vhd
+COMPONENT_FILES	:=
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
@@ -29,7 +29,7 @@ TEST_BENCH	:= tb_$(TOP_LEVEL_FILE)
 
 # Fill in the names of any test bench helper code files (code files referenced by your testbenches
 # other than the actual design files)( do not include the 'source/')
-TB_HELPER_FILES	:= 
+TB_HELPER_FILES	:= on_chip_sram.vhd
 
 # Get the top level design and test_bench module names
 TB_MODULE		:= $(notdir $(basename $(TEST_BENCH)))
@@ -179,6 +179,15 @@ $(S_WORK_LIB)/%: source/%.sv $(S_WORK_LIB)
 	@$(COMPILE) -work $(word 2, $^) $< > $*.scomp
 	@echo -e "Done compiling '$<' into work library '$(word 2, $^)'"
 
+#I ADDED THIS i added this
+# Define a pattern rule to automatically compile updated source files for a design
+$(S_WORK_LIB)/%: source/%.vhd $(S_WORK_LIB)
+	@echo -e "Compiling '$<' into work library '$(word 2, $^)'"
+	@rm -rf $@
+	@vcom -work $(word 2, $^) $< > $*.scomp
+	@echo -e "Done compiling '$<' into work library '$(word 2, $^)'"
+
+
 # Define a pattern rule to for use at commandline to compile source versions and
 # send feedback to terminal instead of log file
 source_%: source/%.sv $(S_WORK_LIB)
@@ -205,6 +214,14 @@ $(M_WORK_LIB)/tb_%: source/tb_%.sv $(M_WORK_LIB)
 	@echo -e "Compiling '$<' into work library '$(word 2, $^)'"
 	@rm -rf $@
 	@$(COMPILE) -work $(word 2, $^) $< > $*.mcomp
+	@echo -e "Done compiling '$<' into work library '$(word 2, $^)'"
+
+#I ADDED THIS i added this
+# Define a pattern rule to automatically compile updated test bench files for a full mapped design
+$(M_WORK_LIB)/%: source/%.vhd $(M_WORK_LIB)
+	@echo -e "Compiling '$<' into work library '$(word 2, $^)'"
+	@rm -rf $@
+	@vcom -work $(word 2, $^) $< > $*.mcomp
 	@echo -e "Done compiling '$<' into work library '$(word 2, $^)'"
 
 # Define a pattern rule to for use at commandline to compile mapped versions and
