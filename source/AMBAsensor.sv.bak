@@ -25,3 +25,4 @@ assign mWrite=HWRITE;
 assign mRead=~HWRITE;
 assign dataReady=HREADY;
 
+endmodule

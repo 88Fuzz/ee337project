@@ -6,5 +6,7 @@ module G
 );
 reg [31:0] tmp;
 
+tmp={inputVal[31:8], inputVal[7:0]};
+
 
 endmodule
