@@ -21,7 +21,7 @@ module controller
 	output reg sbytes_enable,
 	output reg srows_enable,
 	output reg mcol_enable,
-  output reg around_enable
+	output reg around_enable
 );
 
 	typedef enum bit [4:0] {IDLEk, RADDRk, WAITk, READDATAk, IDLE, RADDR, WAIT, READDATA, CHECK, KEYEXP, SBYTES, SROWS, MCOL, AROUND, DONE, SEND} stateType;
@@ -140,24 +140,24 @@ module controller
 		keyexp_enable = 1'b0;
 		srows_enable = 1'b0;
 		sbytes_enable = 1'b0;
-    around_enable = 1'b0;
-    mcol_enable = 1'b0;
-    read_enable = 1'b0;
-    readk_enable = 1'b0;
-    write_enable = 1'b0;
-    case(state)
-      READDATA:
-      begin
-        read_enable = 1'b1;
-      end
-      READDATAk:
-      begin
-        readk_enable = 1'b1;
-      end
-      KEYEXP:
-      begin
-        keyexp_enable = 1'b1;
-      end
+		around_enable = 1'b0;
+		mcol_enable = 1'b0;
+		read_enable = 1'b0;
+    		readk_enable = 1'b0;
+   		write_enable = 1'b0;
+    		case(state)
+      		READDATA:
+      		begin
+        		read_enable = 1'b1;
+      		end
+      		READDATAk:
+     		begin
+        		readk_enable = 1'b1;
+      		end
+      		KEYEXP:
+      		begin
+        		keyexp_enable = 1'b1;
+      		end
       SBYTES:
       begin
         sbytes_enable = 1'b1;
