@@ -12,7 +12,7 @@ module sbytes
 	input wire [7:0] olddata,
 	//input wire [255:0] table,
 	input wire sbytes_enable,
-	output reg sbytes_finished,
+	//output reg sbytes_finished,
 	output reg [7:0] newdata
 );
 
@@ -28,7 +28,7 @@ module sbytes
 		case(index)
   		0:
 		begin
-			out<=8'e99;
+			out<=8'd99;
 		end
 		1:
 		begin

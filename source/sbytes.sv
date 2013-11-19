@@ -12,7 +12,7 @@ module sbytes
 	input wire [7:0] olddata,
 	//input wire [255:0] table,
 	input wire sbytes_enable,
-	output reg sbytes_finished,
+	//output reg sbytes_finished,
 	output reg [7:0] newdata
 );
 
@@ -1052,10 +1052,10 @@ module sbytes
 		end
     endcase
     
-    if(out != 1'b0) begin
+/*    if(out != 1'b0) begin
       sbytes_finished <= 1'b1;
     end else begin
       sbytes_finished <= 1'b0;
-    end
+    end*/
   end
 endmodule
