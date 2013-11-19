@@ -16,7 +16,7 @@ module srows
 	output reg [127:0] newdata
 );
 
-	assign newdata = srows_enable ? {olddata[31:0],olddata[63:40],olddata[39:32],olddata[95:80],olddata[79:64],olddata[127:120],olddata[119:96]} : olddata;
+	assign newdata = srows_enable ? {olddata[127:96],olddata[87:64],olddata[95:88],olddata[47:32],olddata[63:48],olddata[7:0],olddata[31:8]} : olddata;
 
 	assign srows_finished = (newdata == olddata) ? 1'b0 : 1'b1;
 /*
