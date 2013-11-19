@@ -65,7 +65,7 @@ always@(currState)begin
   endcase
 end
 
-always @ (currState, enable, oldKey, roundNum) begin
+always @ (currState, enable, pastKey, roundNum) begin
   case(currState)
     IDLE: begin
       if(enable)
