@@ -190,102 +190,119 @@ always @ (currState, sbytes_enable) begin
     LOAD1: begin
     end
     CALC1: begin
+      nextState=SAVE1;
     end
     SAVE1: begin
     end
     LOAD2: begin
     end
     CALC2: begin
+      nextState=SAVE2;
     end
     SAVE2: begin
     end
     LOAD3: begin
     end
     CALC3: begin
+      nextState=SAVE3;
     end
     SAVE3: begin
     end
     LOAD4: begin
     end
     CALC4: begin
+      nextState=SAVE4;
     end
     SAVE4: begin
     end
     LOAD5: begin
     end
     CALC5: begin
+      nextState=SAVE5;
     end
     SAVE5: begin
     end
     LOAD6: begin
     end
     CALC6: begin
+      nextState=SAVE6;
     end
     SAVE6: begin
     end
     LOAD7: begin
     end
     CALC7: begin
+      nextState=SAVE7;
     end
     SAVE7: begin
     end
     LOAD8: begin
     end
     CALC8: begin
+      nextState=SAVE8;
     end
     SAVE8: begin
     end
     LOAD9: begin
     end
     CALC9: begin
+      nextState=SAVE9;
     end
     SAVE9: begin
     end
     LOAD10: begin
     end
     CALC10: begin
+      nextState=SAVE10;
     end
     SAVE10: begin
     end
     LOAD11: begin
     end
     CALC11: begin
+      nextState=SAVE11;
     end
     SAVE11: begin
     end
     LOAD12: begin
     end
     CALC12: begin
+      nextState=SAVE12;
     end
     SAVE12: begin
     end
     LOAD13: begin
     end
     CALC13: begin
+      nextState=SAVE13;
     end
     SAVE13: begin
     end
     LOAD14: begin
     end
     CALC14: begin
+      nextState=SAVE14;
     end
     SAVE14: begin
     end
     LOAD15: begin
     end
     CALC15: begin
+      nextState=SAVE15;
     end
     SAVE15: begin
     end
     LOAD16: begin
     end
     CALC16: begin
+      nextState=SAVE16;
     end
     SAVE16: begin
     end
     DONE: begin
     end
     default: begin
+      nextState=IDLE;
     end
   endcase
 end
