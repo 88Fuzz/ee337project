@@ -19,10 +19,15 @@ module AMBAsensor
 );
 
 localparam addr=32'hF0F0F0F0;
+wire error1, error2;
 
 assign addrMatch = (addr==HADDR) ? 1'b1 : 1'b0;
 assign mWrite=HWRITE;
 assign mRead=~HWRITE;
 assign dataReady=HREADY;
+assign error1=HBURST & 3'b000;
+assign error2=HSIZE & 3'b100;
+assign error3=HTRANS & 2'b10;
+assign invalid=error1 | error2 | error3;
 
 endmodule
