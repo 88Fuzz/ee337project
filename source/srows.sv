@@ -12,7 +12,7 @@ module srows
 	//input wire n_rst,
 	input wire [127:0] olddata,
 	input wire srows_enable,
-	output reg srows_finished
+	output reg srows_finished,
 	output reg [127:0] newdata
 );
 
