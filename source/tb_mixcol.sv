@@ -23,7 +23,8 @@ module tb_mixcol();
 
 	initial begin
 		tb_mixcol_enable = 1'b1;
-		tb_olddata = 128'hd4e0b81ebfb441275d52119830aef1e5;
+		//tb_olddata = 128'hd4e0b81ebfb441275d52119830aef1e5;
+		tb_olddata = 128'hc601f2dbc6010a13c6012253c6015c45;
 
 		#30ns
 		tb_mixcol_enable = 1'b0;
