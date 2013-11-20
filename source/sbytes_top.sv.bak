@@ -49,98 +49,130 @@ always @ (currState) begin
     LOAD1: begin
     end
     CALC1: begin
+      olddata=1;
     end
     SAVE1: begin
+      olddata=0;
     end
     LOAD2: begin
     end
     CALC2: begin
+      olddata=1;
     end
     SAVE2: begin
+      olddata=0;
     end
     LOAD3: begin
     end
     CALC3: begin
+      olddata=1;
     end
     SAVE3: begin
+      olddata=0;
     end
     LOAD4: begin
     end
     CALC4: begin
+      olddata=1;
     end
     SAVE4: begin
+      olddata=0;
     end
     LOAD5: begin
     end
     CALC5: begin
+      olddata=1;
     end
     SAVE5: begin
+      olddata=0;
     end
     LOAD6: begin
     end
     CALC6: begin
+      olddata=1;
     end
     SAVE6: begin
+      olddata=0;
     end
     LOAD7: begin
     end
     CALC7: begin
+      olddata=1;
     end
     SAVE7: begin
+      olddata=0;
     end
     LOAD8: begin
     end
     CALC8: begin
+      olddata=1;
     end
     SAVE8: begin
+      olddata=0;
     end
     LOAD9: begin
     end
     CALC9: begin
+      olddata=1;
     end
     SAVE9: begin
+      olddata=0;
     end
     LOAD10: begin
     end
     CALC10: begin
+      olddata=1;
     end
     SAVE10: begin
+      olddata=0;
     end
     LOAD11: begin
     end
     CALC11: begin
+      olddata=1;
     end
     SAVE11: begin
+      olddata=0;
     end
     LOAD12: begin
     end
     CALC12: begin
+      olddata=1;
     end
     SAVE12: begin
+      olddata=0;
     end
     LOAD13: begin
     end
     CALC13: begin
+      olddata=1;
     end
     SAVE13: begin
+      olddata=0;
     end
     LOAD14: begin
     end
     CALC14: begin
+      olddata=1;
     end
     SAVE14: begin
+      olddata=0;
     end
     LOAD15: begin
     end
     CALC15: begin
+      olddata=1;
     end
     SAVE15: begin
+      olddata=0;
     end
     LOAD16: begin
     end
     CALC16: begin
+      olddata=1;
     end
     SAVE16: begin
+      olddata=0;
     end
     DONE: begin
     end
