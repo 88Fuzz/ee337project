@@ -8,16 +8,17 @@ module testing_sram
   input wire dumpNum,
   output wire [7:0] valueOut
 );
-
+reg tmp=0;
+reg [7:0]tmp2=200;
 on_chip_sram_wrapper tttttttt(
               .init_file_number(0),
               .dump_file_number(dumpNum),
-              .mem_clr(0),
-              .mem_init(0),
+              .mem_clr(tmp),
+              .mem_init(tmp),
               .mem_dump(dump),
-              .start_address(0),
-              .last_address(200),
-              .verbose(0),
+              .start_address(tmp),
+              .last_address(tmp2),
+              .verbose(tmp),
               .read_enable(read),
               .write_enable(write),
               .address(addr),

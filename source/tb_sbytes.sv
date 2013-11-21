@@ -2,7 +2,7 @@
 
 module tb_sbytes();
 
-localparam WAIT=5;
+localparam WAIT=6;
 
 reg [7:0] tb_olddata;
 reg [7:0] tb_newdata;
@@ -19,9 +19,17 @@ sbytes setybs
 
 initial
 begin
+  
   tb_sbytes_enable=0;
-  #(WAIT);
+  #(WAIT*2);
+  tb_sbytes_enable=1;
+  #(WAIT*2);
+  
+  
+  tb_sbytes_enable=0;
+  #(WAIT*2);
   tb_olddata=67;
+  #(WAIT);
   tb_sbytes_enable=1;
   #(WAIT);
   
@@ -36,8 +44,9 @@ begin
   
   
   tb_sbytes_enable=0;
-  #(WAIT);
+  #(WAIT*2);
   tb_olddata=0;
+  #(WAIT);
   tb_sbytes_enable=1;
   #(WAIT);
   
@@ -51,8 +60,9 @@ begin
 
     
   tb_sbytes_enable=0;
-  #(WAIT);
+  #(WAIT*2);
   tb_olddata=255;
+  #(WAIT);
   tb_sbytes_enable=1;
   #(WAIT);
   
@@ -67,8 +77,9 @@ begin
 
     
   tb_sbytes_enable=0;
-  #(WAIT);
+  #(WAIT*2);
   tb_olddata=116;
+  #(WAIT);
   tb_sbytes_enable=1;
   #(WAIT);
   
@@ -83,8 +94,9 @@ begin
 
   
   tb_sbytes_enable=0;
-  #(WAIT);
+  #(WAIT*2);
   tb_olddata=97;
+  #(WAIT);
   tb_sbytes_enable=1;
   #(WAIT);
   

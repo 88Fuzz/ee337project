@@ -56,7 +56,7 @@ initial begin
   tb_expected=89;
   tb_read=1;
   
-  #(WAIT);
+  #(WAIT*2);
   
   tb_test_num=tb_test_num+1;
   if(tb_expected==tb_valueOut)
@@ -69,7 +69,7 @@ initial begin
   tb_expected=210;
   tb_read=1;
   
-  #(WAIT);
+  #(WAIT*2);
   
   tb_test_num=tb_test_num+1;
   if(tb_expected==tb_valueOut)
@@ -83,7 +83,7 @@ initial begin
   tb_expected=66;
   tb_read=1;
   
-  #(WAIT);
+  #(WAIT*2);
   
   tb_test_num=tb_test_num+1;
   if(tb_expected==tb_valueOut)

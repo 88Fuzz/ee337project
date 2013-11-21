@@ -2,7 +2,7 @@
 
 module tb_sbytes();
 
-localparam WAIT=5;
+localparam WAIT=6;
 
 reg [7:0] tb_olddata;
 reg [7:0] tb_newdata;
@@ -19,7 +19,15 @@ sbytes setybs
 
 initial
 begin
+  
   tb_sbytes_enable=0;
+  #(WAIT*2);
+  tb_sbytes_enable=1;
+  #(WAIT*2);
+  
+  
+  tb_sbytes_enable=0;
+  #(WAIT*2);
   tb_olddata=67;
   tb_sbytes_enable=1;
   #(WAIT);
@@ -31,10 +39,11 @@ begin
   else
     $error("Test %d bad", tb_test_num);
     
-  #(WAIT);
+
   
   
   tb_sbytes_enable=0;
+  #(WAIT*2);
   tb_olddata=0;
   tb_sbytes_enable=1;
   #(WAIT);
@@ -46,9 +55,10 @@ begin
   else
     $error("Test %d bad", tb_test_num);
     
-    #(WAIT);
+
     
   tb_sbytes_enable=0;
+  #(WAIT*2);
   tb_olddata=255;
   tb_sbytes_enable=1;
   #(WAIT);
@@ -61,9 +71,10 @@ begin
     $error("Test %d bad", tb_test_num);
     
     
-    #(WAIT);
+
     
   tb_sbytes_enable=0;
+  #(WAIT*2);
   tb_olddata=116;
   tb_sbytes_enable=1;
   #(WAIT);
@@ -76,9 +87,10 @@ begin
     $error("Test %d bad", tb_test_num);
   
   
-  #(WAIT);
+
   
   tb_sbytes_enable=0;
+  #(WAIT*2);
   tb_olddata=97;
   tb_sbytes_enable=1;
   #(WAIT);
