@@ -16,12 +16,12 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 # (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-COMPONENT_FILES	:=
+COMPONENT_FILES	:= sbytes.sv testing_sram.sv rcon.sv G.sv keyExpansion.sv
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-TOP_LEVEL_FILE	:= 
+TOP_LEVEL_FILE	:= testing_sram.sv
 
 # Specify the filepath of the test bench you want to use (ie. tb_top_level.sv)
 # (do not include the source folder in the name)
@@ -195,6 +195,16 @@ source_%: source/%.sv $(S_WORK_LIB)
 	@rm -rf $(word 2, $^)/$*
 	@$(COMPILE) -work $(word 2, $^) $<
 	@echo -e "Done compiling '$<' into work library '$(word 2, $^)'"
+
+#I ADDED THIS i added this
+# Define a pattern rule to for use at commandline to compile source versions and
+# send feedback to terminal instead of log file
+source_%: source/%.sv $(S_WORK_LIB)
+	@echo -e "Compiling '$<' into work library '$(word 2, $^)'"
+	@rm -rf $(word 2, $^)/$*
+	@vcom -work $(word 2, $^) $<
+	@echo -e "Done compiling '$<' into work library '$(word 2, $^)'"
+
 
 # Define a pattern rule to automatically create the work library for a full design mapped compile
 $(M_WORK_LIB):

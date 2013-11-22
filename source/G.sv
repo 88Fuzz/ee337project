@@ -9,21 +9,30 @@ module G
   output reg done
 );
 
-typedef enum bit[3:0] {IDLE, LEFTROTATE, SBYTE1, SBYTE2, SBYTE3, SBYTE4, RCON, DONE} stateType;
+typedef enum bit[3:0] {IDLE, LEFTROTATE, SENABLE1, SBYTE1, SENABLE2, 
+                                 SBYTE2, SENABLE3, SBYTE3, SENABLE4,
+                                 SBYTE4, PRERCON, RCON, DONE} stateType;
 stateType nextState, currState;
 reg [31:0] tmp;
 reg [7:0] tmpByteIn;
 reg [7:0] tmpByteOut;
 reg sbytes_enable;
+reg [31:0] outputValue;
+reg [7:0] rconOut;
 
 //tmp={inputVal[31:8], inputVal[7:0]};
-
+assign outputVal=outputValue;
 
 
 sbytes boop(
         .olddata(tmpByteIn),
         .sbytes_enable(sbytes_enable),
         .newdata(tmpByteOut)
+      );
+      
+rcon boopy(
+        .roundNum(roundNum),
+        .out(rconOut)
       );
 
 always @(posedge clk, negedge n_rst) begin
@@ -37,31 +46,71 @@ always @(currState) begin//fill out this stuff
   case(currState)
     IDLE:begin
       done=0;
+      sbytes_enable=0;
     end
     LEFTROTATE: begin
       done=0;
-      tmp={inputVal[31:8], inputVal[7:0]};
+//      tmp={inputVal[31:8], inputVal[7:0]};
+      tmp={inputVal[23:0],inputVal[31:24]};
+      sbytes_enable=0;
+      tmpByteIn=tmp[7:0];
+    end
+    SENABLE1: begin
+      done=0;
+      sbytes_enable=1;
     end
     SBYTE1: begin
       done=0;
+//      sbytes_enable=1;
+      sbytes_enable=0;
+      tmpByteIn=tmp[15:8];//doing some weird foot work to see if this will work
+    end
+    SENABLE2: begin
+      tmp[7:0]=tmpByteOut;
+      done=0;
+      sbytes_enable=1;
     end
     SBYTE2: begin
       done=0;
+      sbytes_enable=0;
+      tmpByteIn=tmp[23:16];
+    end
+    SENABLE3: begin
+      tmp[15:8]=tmpByteOut;
+      done=0;
+      sbytes_enable=1;
     end
     SBYTE3: begin
       done=0;
+      sbytes_enable=0;
+      tmpByteIn=tmp[31:24];
+    end
+    SENABLE4: begin
+      tmp[23:16]=tmpByteOut;
+      done=0;
+      sbytes_enable=1;
     end
     SBYTE4: begin
       done=0;
+      sbytes_enable=0;
+    end
+    PRERCON: begin
+      done=0;
+      sbytes_enable=0;
+      tmp[31:24]=tmpByteOut;
     end
     RCON: begin
       done=0;
+      sbytes_enable=0;
+      outputValue=tmp^{rconOut,24'h0};
     end
     DONE: begin
       done=1;
+      sbytes_enable=0;
     end
     default: begin
       done=0;
+      sbytes_enable=0;
     end
   endcase
 end
@@ -73,18 +122,33 @@ always @(currState, enable) begin
         nextState=LEFTROTATE;
     end
     LEFTROTATE: begin
+      nextState=SENABLE1;
+    end
+    SENABLE1: begin
       nextState=SBYTE1;
     end
     SBYTE1: begin
-      nextState=SBYTES2;
+      nextState=SENABLE2;
+    end
+    SENABLE2: begin
+      nextState=SBYTE2;
     end
     SBYTE2: begin
-      nextState=SBYTES3;
+      nextState=SENABLE3;
+    end
+    SENABLE3: begin
+      nextState=SBYTE3;
     end
     SBYTE3: begin
-      nextState=SBYTES4;
+      nextState=SENABLE4;
+    end
+    SENABLE4: begin
+      nextState=SBYTE4;
     end
     SBYTE4: begin
+      nextState=PRERCON;
+    end
+    PRERCON: begin
       nextState=RCON;
     end
     RCON: begin

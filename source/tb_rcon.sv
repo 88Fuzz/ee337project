@@ -1,0 +1,139 @@
+`timescale 1ns / 100ps
+module tb_rcon();
+
+localparam WAIT=5;
+reg [3:0] tb_roundNum;
+reg [7:0] tb_out;
+reg [7:0] tb_expected_out;
+
+rcon DUT(
+  .roundNum(tb_roundNum),
+  .out(tb_out)
+);
+
+initial
+begin
+  tb_roundNum=1;
+  tb_expected_out=8'h01;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h02;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+  
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h04;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+  
+  
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h08;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+    
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h10;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+      
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h20;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+    
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h40;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+    
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h80;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+    
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h1B;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+  
+    
+
+  tb_roundNum=tb_roundNum+1;
+  tb_expected_out=8'h36;
+  #(WAIT);
+  
+  if(tb_out==tb_expected_out)
+    $display("Test %d good", tb_roundNum);
+  else
+    $error("Test %d bad", tb_roundNum);
+  
+  #(WAIT);
+  
+end
+
+endmodule

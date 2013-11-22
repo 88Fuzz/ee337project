@@ -1,0 +1,12 @@
+module rcon(
+  input wire [3:0] roundNum,
+  output wire [7:0] out
+);
+
+assign out=2**(roundNum-1);
+
+//out=(roundNum==1 ? 1 :
+//    (roundNum==2 ? 2 :
+    
+
+endmodule
