@@ -65,7 +65,7 @@ begin
   @(posedge tb_clk);
   #(WAIT);
   tb_enable=0;
-  //tb_expected_out=32'h;
+  tb_expected_out=32'h6C_16_3d_8C;
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
