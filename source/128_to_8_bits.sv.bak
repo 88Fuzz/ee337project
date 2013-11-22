@@ -1,0 +1,119 @@
+// $Id: $
+// File name:   pts_sr.sv
+// Created:     9/2/2013
+// Author:      Vipul Vishnu Bhat 
+// Lab Section: 337-02
+// Version:     1.0  Initial Design Entry
+// Description: Postlab 2.4
+
+
+module parallel_to_parallel
+
+#(
+parameter NUM_BITS = 128, 
+parameter NUM_OUT = 8, 
+parameter SHIFT_MSB = 1 
+)  
+    
+(
+input wire clk,
+input wire n_rst,
+input wire shift_enable,
+input wire load_enable, 
+input wire [NUM_BITS-1:0]parallel_in,
+output reg [NUM_OUT-1:0]serial_out 
+);
+
+reg [NUM_BITS-1:0]parallel_curr; 
+reg [NUM_BITS-1:0]parallel_next; 
+
+//reg [NUM_OUT-1:0]output_curr; 
+//reg [NUM_OUT-1:0]output_next; 
+
+integer i; 
+integer k; 
+
+
+always @ ( posedge clk, negedge n_rst ) begin 
+  if ( n_rst == 0 ) begin 
+
+    for ( i = 0; i < NUM_BITS; i = i + 1 ) begin
+     parallel_curr[i] <= 1; 
+    end 
+    
+//    for ( k = 0; k < NUM_OUT; k = k + 1 ) begin
+//     output_curr[k] <= 1; 
+//    end 
+    
+  end else begin 
+  
+    for ( i = 0; i < NUM_BITS; i = i + 1 ) begin
+     parallel_curr[i] <= parallel_next[i]; 
+    end 
+    
+//    for ( k = 0; k < NUM_OUT; k = k + 1 ) begin
+//     output_curr[k] <= output_next; 
+//    end 
+     
+  
+  
+  end 
+end 
+
+always @ ( shift_enable, load_enable, parallel_curr, parallel_in ) begin
+  if ( load_enable == 1 ) begin
+ 
+    for ( i = 0; i < NUM_BITS; i = i + 1 ) begin
+     parallel_next[i] = parallel_in[i]; 
+    end
+ 
+ 
+ 
+  end 
+  
+else if ( shift_enable == 1 ) begin 
+  
+   if ( SHIFT_MSB == 1 ) begin 
+   
+ //     for ( i = NUM_BITS - 1; i > 0; i = i - 1 ) begin
+ //       parallel_next[i] = parallel_curr[i-1]; 
+ //     end
+ 
+ parallel_next = {parallel_curr[NUM_BITS-9:0],parallel_curr[NUM_BITS-1:NUM_BITS-8]};  
+      
+ //     parallel_next[0] = 1;
+      
+//      for ( k = NUM_OUT - 1; k > 0; k = k - 1 ) begin
+//        output_next[k] = output_curr[k-1]; 
+//      end   
+      
+ 
+  end
+  
+else 
+  parallel_next = parallel_next; 
+
+  
+//  if ( SHIFT_MSB == 0 ) begin 
+//    
+//      for ( i = 0; i < NUM_BITS - 1; i = i + 1 ) begin
+//       parallel_next[i] = parallel_curr[i+1]; 
+//      end 
+      
+//        parallel_next[NUM_BITS-1] = 1;
+// end 
+ 
+ end 
+  
+else begin 
+  parallel_next = parallel_curr; 
+end 
+   
+end 
+
+assign serial_out = parallel_curr[NUM_BITS-1:NUM_BITS-9]; 
+
+endmodule 
+ 
+ 
+  

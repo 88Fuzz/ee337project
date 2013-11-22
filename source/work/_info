@@ -1,0 +1,89 @@
+m255
+K3
+13
+cModel Technology
+Z0 d/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source
+vparallel_to_parallel
+Z1 DXx6 sv_std 3 std 0 22 F[19LRNL:5;XmIFh[XOPn1
+Z2 !s100 3Ea4?[8QYCbO4S>mgF06e1
+Z3 I>4WBBdVhQ6?eIX<bZK67d3
+Z4 VZXd@9Ho^5:Z@CDG0aLbM;3
+Z5 !s105 _128_to_8_bits_sv_unit
+S1
+Z6 d/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source
+Z7 w1385092316
+Z8 8/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/128_to_8_bits.sv
+Z9 F/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/128_to_8_bits.sv
+L0 10
+Z10 OL;L;10.1b;51
+r1
+31
+Z11 !s90 -reportprogress|300|-work|work|/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/128_to_8_bits.sv|
+Z12 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
+Z13 !s108 1385092397.737748
+Z14 !s107 /home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/128_to_8_bits.sv|
+!i10b 1
+!s85 0
+vpts_sr
+R1
+Z15 !s100 kd86AdjEKjOW?9aieWVk^3
+Z16 ISb?[YHY6XE^G3:TgPN=GF2
+Z17 V=dS=9GFoo6@ZZ<jBSVNE70
+R5
+S1
+R6
+Z18 w1385084506
+R8
+R9
+L0 10
+R10
+r1
+31
+R11
+R12
+Z19 !s108 1385088071.803021
+R14
+!i10b 1
+!s85 0
+vtb_flex_pts_sr
+R1
+Z20 !s100 ]M8dbfBGf>kL3zR?cEX8[0
+Z21 I[>4<KT4Y64Z3Ga0C7KaI:2
+Z22 Vznf_PQ3Mk`[5zP<`XQegV1
+Z23 !s105 tb_128_to_8_bits_sv_unit
+S1
+R6
+Z24 w1385092332
+Z25 8/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/tb_128_to_8_bits.sv
+Z26 F/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/tb_128_to_8_bits.sv
+L0 3
+R10
+r1
+31
+Z27 !s90 -reportprogress|300|-work|work|/home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/tb_128_to_8_bits.sv|
+R12
+!i10b 1
+!s85 0
+Z28 !s108 1385092468.921645
+Z29 !s107 /home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/tb_128_to_8_bits.sv|
+vtb_parallel_to_parallel
+R1
+!i10b 1
+!s100 5n9eUdDlSlmoK6R;o9L>=2
+IlYDXm4lbXRV?<ff^LO3;_2
+V:HMVB4EU<=OmH3X598`[Y1
+R23
+S1
+R6
+w1385092849
+R25
+R26
+L0 3
+R10
+r1
+!s85 0
+31
+!s108 1385092857.580473
+!s107 /home/ecegrid/a/mg65/Desktop/ECE337/ee337project/source/tb_128_to_8_bits.sv|
+R27
+R12
