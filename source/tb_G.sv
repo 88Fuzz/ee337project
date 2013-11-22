@@ -36,7 +36,7 @@ initial
 begin
   tb_enable=0;
   tb_n_rst=0;
-  #(CLKPERIOD);
+  #(CLKPERIOD*2);
   tb_n_rst=1;
   #(CLKPERIOD);
   
@@ -49,7 +49,19 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'hAD_AC_AC_AC;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
+  
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
   else
@@ -66,6 +78,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h6C_16_3d_8C;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -86,6 +109,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h12_16_16_16;;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -105,6 +139,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h6B_63_63_63;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -124,6 +169,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h08_B1_BC_C9;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -140,6 +196,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h6D_1A_FD_17;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -158,6 +225,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h4D_9E_3D_06;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -177,6 +255,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h59_99_56_33;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -196,6 +285,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'hAF_89_85_63;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);
@@ -215,6 +315,17 @@ begin
   #(WAIT);
   tb_enable=0;
   tb_expected_out=32'h8B_A8_28_A1;
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  @(posedge tb_clk);
+  
   @(posedge tb_done);
   if(tb_expected_out==tb_outputVal)
     $display("round %d is good", tb_roundNum);

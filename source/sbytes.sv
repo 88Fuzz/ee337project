@@ -11,12 +11,268 @@ module sbytes
 (
 	input wire [7:0] olddata,
 	//input wire [255:0] table,
-	input wire sbytes_enable,
+	//input wire sbytes_enable,
 	//output reg sbytes_finished,
 	output reg [7:0] newdata
 );
 
-	reg [7:0] index;
+assign newdata = (olddata==0 ? 8'h63 :
+                 (olddata==1 ? 8'h7c :
+                 (olddata==2 ? 8'h77 :
+                 (olddata==3 ? 8'h7b :
+                 (olddata==4 ? 8'hf2 :
+                 (olddata==5 ? 8'h6b :
+                 (olddata==6 ? 8'h6f :
+                 (olddata==7 ? 8'hc5 :
+                 (olddata==8 ? 8'h30 :
+                 (olddata==9 ? 8'h1 :
+                 (olddata==10 ? 8'h67 :
+                 (olddata==11 ? 8'h2b :
+                 (olddata==12 ? 8'hfe :
+                 (olddata==13 ? 8'hd7 :
+                 (olddata==14 ? 8'hab :
+                 (olddata==15 ? 8'h76 :
+                 (olddata==16 ? 8'hca :
+                 (olddata==17 ? 8'h82 :
+                 (olddata==18 ? 8'hc9 :
+                 (olddata==19 ? 8'h7d :
+                 (olddata==20 ? 8'hfa :
+                 (olddata==21 ? 8'h59 :
+                 (olddata==22 ? 8'h47 :
+                 (olddata==23 ? 8'hf0 :
+                 (olddata==24 ? 8'had :
+                 (olddata==25 ? 8'hd4 :
+                 (olddata==26 ? 8'ha2 :
+                 (olddata==27 ? 8'haf :
+                 (olddata==28 ? 8'h9c :
+                 (olddata==29 ? 8'ha4 :
+                 (olddata==30 ? 8'h72 :
+                 (olddata==31 ? 8'hc0 :
+                 (olddata==32 ? 8'hb7 :
+                 (olddata==33 ? 8'hfd :
+                 (olddata==34 ? 8'h93 :
+                 (olddata==35 ? 8'h26 :
+                 (olddata==36 ? 8'h36 :
+                 (olddata==37 ? 8'h3f :
+                 (olddata==38 ? 8'hf7 :
+                 (olddata==39 ? 8'hcc :
+                 (olddata==40 ? 8'h34 :
+                 (olddata==41 ? 8'ha5 :
+                 (olddata==42 ? 8'he5 :
+                 (olddata==43 ? 8'hf1 :
+                 (olddata==44 ? 8'h71 :
+                 (olddata==45 ? 8'hd8 :
+                 (olddata==46 ? 8'h31 :
+                 (olddata==47 ? 8'h15 :
+                 (olddata==48 ? 8'h4 :
+                 (olddata==49 ? 8'hc7 :
+                 (olddata==50 ? 8'h23 :
+                 (olddata==51 ? 8'hc3 :
+                 (olddata==52 ? 8'h18 :
+                 (olddata==53 ? 8'h96 :
+                 (olddata==54 ? 8'h5 :
+                 (olddata==55 ? 8'h9a :
+                 (olddata==56 ? 8'h7 :
+                 (olddata==57 ? 8'h12 :
+                 (olddata==58 ? 8'h80 :
+                 (olddata==59 ? 8'he2 :
+                 (olddata==60 ? 8'heb :
+                 (olddata==61 ? 8'h27 :
+                 (olddata==62 ? 8'hb2 :
+                 (olddata==63 ? 8'h75 :
+                 (olddata==64 ? 8'h9 :
+                 (olddata==65 ? 8'h83 :
+                 (olddata==66 ? 8'h2c :
+                 (olddata==67 ? 8'h1a :
+                 (olddata==68 ? 8'h1b :
+                 (olddata==69 ? 8'h6e :
+                 (olddata==70 ? 8'h5a :
+                 (olddata==71 ? 8'ha0 :
+                 (olddata==72 ? 8'h52 :
+                 (olddata==73 ? 8'h3b :
+                 (olddata==74 ? 8'hd6 :
+                 (olddata==75 ? 8'hb3 :
+                 (olddata==76 ? 8'h29 :
+                 (olddata==77 ? 8'he3 :
+                 (olddata==78 ? 8'h2f :
+                 (olddata==79 ? 8'h84 :
+                 (olddata==80 ? 8'h53 :
+                 (olddata==81 ? 8'hd1 :
+                 (olddata==82 ? 8'h0 :
+                 (olddata==83 ? 8'hed :
+                 (olddata==84 ? 8'h20 :
+                 (olddata==85 ? 8'hfc :
+                 (olddata==86 ? 8'hb1 :
+                 (olddata==87 ? 8'h5b :
+                 (olddata==88 ? 8'h6a :
+                 (olddata==89 ? 8'hcb :
+                 (olddata==90 ? 8'hbe :
+                 (olddata==91 ? 8'h39 :
+                 (olddata==92 ? 8'h4a :
+                 (olddata==93 ? 8'h4c :
+                 (olddata==94 ? 8'h58 :
+                 (olddata==95 ? 8'hcf :
+                 (olddata==96 ? 8'hd0 :
+                 (olddata==97 ? 8'hef :
+                 (olddata==98 ? 8'haa :
+                 (olddata==99 ? 8'hfb :
+                 (olddata==100 ? 8'h43 :
+                 (olddata==101 ? 8'h4d :
+                 (olddata==102 ? 8'h33 :
+                 (olddata==103 ? 8'h85 :
+                 (olddata==104 ? 8'h45 :
+                 (olddata==105 ? 8'hf9 :
+                 (olddata==106 ? 8'h2 :
+                 (olddata==107 ? 8'h7f :
+                 (olddata==108 ? 8'h50 :
+                 (olddata==109 ? 8'h3c :
+                 (olddata==110 ? 8'h9f :
+                 (olddata==111 ? 8'ha8 :
+                 (olddata==112 ? 8'h51 :
+                 (olddata==113 ? 8'ha3 :
+                 (olddata==114 ? 8'h40 :
+                 (olddata==115 ? 8'h8f :
+                 (olddata==116 ? 8'h92 :
+                 (olddata==117 ? 8'h9d :
+                 (olddata==118 ? 8'h38 :
+                 (olddata==119 ? 8'hf5 :
+                 (olddata==120 ? 8'hbc :
+                 (olddata==121 ? 8'hb6 :
+                 (olddata==122 ? 8'hda :
+                 (olddata==123 ? 8'h21 :
+                 (olddata==124 ? 8'h10 :
+                 (olddata==125 ? 8'hff :
+                 (olddata==126 ? 8'hf3 :
+                 (olddata==127 ? 8'hd2 :
+                 (olddata==128 ? 8'hcd :
+                 (olddata==129 ? 8'hc :
+                 (olddata==130 ? 8'h13 :
+                 (olddata==131 ? 8'hec :
+                 (olddata==132 ? 8'h5f :
+                 (olddata==133 ? 8'h97 :
+                 (olddata==134 ? 8'h44 :
+                 (olddata==135 ? 8'h17 :
+                 (olddata==136 ? 8'hc4 :
+                 (olddata==137 ? 8'ha7 :
+                 (olddata==138 ? 8'h7e :
+                 (olddata==139 ? 8'h3d :
+                 (olddata==140 ? 8'h64 :
+                 (olddata==141 ? 8'h5d :
+                 (olddata==142 ? 8'h19 :
+                 (olddata==143 ? 8'h73 :
+                 (olddata==144 ? 8'h60 :
+                 (olddata==145 ? 8'h81 :
+                 (olddata==146 ? 8'h4f :
+                 (olddata==147 ? 8'hdc :
+                 (olddata==148 ? 8'h22 :
+                 (olddata==149 ? 8'h2a :
+                 (olddata==150 ? 8'h90 :
+                 (olddata==151 ? 8'h88 :
+                 (olddata==152 ? 8'h46 :
+                 (olddata==153 ? 8'hee :
+                 (olddata==154 ? 8'hb8 :
+                 (olddata==155 ? 8'h14 :
+                 (olddata==156 ? 8'hde :
+                 (olddata==157 ? 8'h5e :
+                 (olddata==158 ? 8'hb :
+                 (olddata==159 ? 8'hdb :
+                 (olddata==160 ? 8'he0 :
+                 (olddata==161 ? 8'h32 :
+                 (olddata==162 ? 8'h3a :
+                 (olddata==163 ? 8'ha :
+                 (olddata==164 ? 8'h49 :
+                 (olddata==165 ? 8'h6 :
+                 (olddata==166 ? 8'h24 :
+                 (olddata==167 ? 8'h5c :
+                 (olddata==168 ? 8'hc2 :
+                 (olddata==169 ? 8'hd3 :
+                 (olddata==170 ? 8'hac :
+                 (olddata==171 ? 8'h62 :
+                 (olddata==172 ? 8'h91 :
+                 (olddata==173 ? 8'h95 :
+                 (olddata==174 ? 8'he4 :
+                 (olddata==175 ? 8'h79 :
+                 (olddata==176 ? 8'he7 :
+                 (olddata==177 ? 8'hc8 :
+                 (olddata==178 ? 8'h37 :
+                 (olddata==179 ? 8'h6d :
+                 (olddata==180 ? 8'h8d :
+                 (olddata==181 ? 8'hd5 :
+                 (olddata==182 ? 8'h4e :
+                 (olddata==183 ? 8'ha9 :
+                 (olddata==184 ? 8'h6c :
+                 (olddata==185 ? 8'h56 :
+                 (olddata==186 ? 8'hf4 :
+                 (olddata==187 ? 8'hea :
+                 (olddata==188 ? 8'h65 :
+                 (olddata==189 ? 8'h7a :
+                 (olddata==190 ? 8'hae :
+                 (olddata==191 ? 8'h8 :
+                 (olddata==192 ? 8'hba :
+                 (olddata==193 ? 8'h78 :
+                 (olddata==194 ? 8'h25 :
+                 (olddata==195 ? 8'h2e :
+                 (olddata==196 ? 8'h1c :
+                 (olddata==197 ? 8'ha6 :
+                 (olddata==198 ? 8'hb4 :
+                 (olddata==199 ? 8'hc6 :
+                 (olddata==200 ? 8'he8 :
+                 (olddata==201 ? 8'hdd :
+                 (olddata==202 ? 8'h74 :
+                 (olddata==203 ? 8'h1f :
+                 (olddata==204 ? 8'h4b :
+                 (olddata==205 ? 8'hbd :
+                 (olddata==206 ? 8'h8b :
+                 (olddata==207 ? 8'h8a :
+                 (olddata==208 ? 8'h70 :
+                 (olddata==209 ? 8'h3e :
+                 (olddata==210 ? 8'hb5 :
+                 (olddata==211 ? 8'h66 :
+                 (olddata==212 ? 8'h48 :
+                 (olddata==213 ? 8'h3 :
+                 (olddata==214 ? 8'hf6 :
+                 (olddata==215 ? 8'he :
+                 (olddata==216 ? 8'h61 :
+                 (olddata==217 ? 8'h35 :
+                 (olddata==218 ? 8'h57 :
+                 (olddata==219 ? 8'hb9 :
+                 (olddata==220 ? 8'h86 :
+                 (olddata==221 ? 8'hc1 :
+                 (olddata==222 ? 8'h1d :
+                 (olddata==223 ? 8'h9e :
+                 (olddata==224 ? 8'he1 :
+                 (olddata==225 ? 8'hf8 :
+                 (olddata==226 ? 8'h98 :
+                 (olddata==227 ? 8'h11 :
+                 (olddata==228 ? 8'h69 :
+                 (olddata==229 ? 8'hd9 :
+                 (olddata==230 ? 8'h8e :
+                 (olddata==231 ? 8'h94 :
+                 (olddata==232 ? 8'h9b :
+                 (olddata==233 ? 8'h1e :
+                 (olddata==234 ? 8'h87 :
+                 (olddata==235 ? 8'he9 :
+                 (olddata==236 ? 8'hce :
+                 (olddata==237 ? 8'h55 :
+                 (olddata==238 ? 8'h28 :
+                 (olddata==239 ? 8'hdf :
+                 (olddata==240 ? 8'h8c :
+                 (olddata==241 ? 8'ha1 :
+                 (olddata==242 ? 8'h89 :
+                 (olddata==243 ? 8'hd :
+                 (olddata==244 ? 8'hbf :
+                 (olddata==245 ? 8'he6 :
+                 (olddata==246 ? 8'h42 :
+                 (olddata==247 ? 8'h68 :
+                 (olddata==248 ? 8'h41 :
+                 (olddata==249 ? 8'h99 :
+                 (olddata==250 ? 8'h2d :
+                 (olddata==251 ? 8'hf :
+                 (olddata==252 ? 8'hb0 :
+                 (olddata==253 ? 8'h54 :
+                 (olddata==254 ? 8'hbb : 8'h16)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
+
+/*	reg [7:0] index;
 	reg [7:0] out;
 	
 	assign index = olddata;
@@ -1052,10 +1308,10 @@ module sbytes
 		end
     endcase
     
-/*    if(out != 1'b0) begin
-      sbytes_finished <= 1'b1;
-    end else begin
-      sbytes_finished <= 1'b0;
-    end*/
-  end
+//    if(out != 1'b0) begin
+//      sbytes_finished <= 1'b1;
+//    end else begin
+//      sbytes_finished <= 1'b0;
+//    end*/
+//  end
 endmodule
