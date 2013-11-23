@@ -12,10 +12,33 @@ module keyExpansion
 reg [31:0] gReturn;
 reg [31:0] gEnter;
 
+reg tmp;
+reg read;
+reg write;
+reg [15:0] addr;
+reg [7:0] sramOut;
+reg [7:0] sramIn;
+
 G gggg(.inputVal(gEnter),
        .roundNum(roundNum),
        .outputVal(gReturn)
        );
+
+on_chip_sram_wrapper tttttttt(
+              .init_file_number(0),
+              .dump_file_number(0),
+              .mem_clr(tmp),
+              .mem_init(tmp),
+              .mem_dump(dump),
+              .start_address(tmp),
+              .last_address(255),
+              .verbose(tmp),
+              .read_enable(read),
+              .write_enable(write),
+              .address(addr),
+              .read_data(sramOut),
+              .write_data(sramIn)
+              );
 
 typedef enum bit[4:0] {IDLE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4, DONE} stateType;//will need states for loading and unloading SRAM
 stateType currState, nextState;

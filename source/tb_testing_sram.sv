@@ -7,11 +7,11 @@ localparam WAIT=5;
 reg tb_read;
 reg tb_write;
 reg [15:0] tb_addr;
-reg [7:0] tb_valueIn;
+reg [127:0] tb_valueIn;
 reg tb_dump;
 reg tb_dumpNum;
-reg [7:0] tb_valueOut;
-reg [7:0] tb_expected;
+reg [127:0] tb_valueOut;
+reg [127:0] tb_expected;
 reg [7:0] tb_test_num=0;
 
 testing_sram DUT
@@ -32,28 +32,28 @@ initial begin
   #(WAIT);
   
   tb_addr=0;
-  tb_valueIn=89;
+  tb_valueIn=128'h01_23_45_67_89_AB_CD_EF_FE_DC_BA_98_76_54_32_10;
   tb_write=1;
   
   #(WAIT);
   
   tb_write=0;
-  tb_addr=59;
-  tb_valueIn=210;
+  tb_addr=16;
+  tb_valueIn=128'hFF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF;
   tb_write=1;
   
   #(WAIT);
   
   tb_write=0;
-  tb_addr=195;
-  tb_valueIn=66;
+  tb_addr=32;
+  tb_valueIn=128'hAA_BB_CC_DD_EE_FF_00_99_88_77_66_55_44_33_22_11;
   tb_write=1;
   
   #(WAIT);
   
   tb_write=0;
   tb_addr=0;
-  tb_expected=89;
+  tb_expected=128'h01_23_45_67_89_AB_CD_EF_FE_DC_BA_98_76_54_32_10;
   tb_read=1;
   
   #(WAIT*2);
@@ -65,8 +65,8 @@ initial begin
     $error("Test %d bad", tb_test_num);
   
   tb_read=0;
-  tb_addr=59;
-  tb_expected=210;
+  tb_addr=16;
+  tb_expected=128'hFF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF;
   tb_read=1;
   
   #(WAIT*2);
@@ -79,8 +79,8 @@ initial begin
     
   
   tb_read=0;
-  tb_addr=195;
-  tb_expected=66;
+  tb_addr=32;
+  tb_expected=128'hAA_BB_CC_DD_EE_FF_00_99_88_77_66_55_44_33_22_11;
   tb_read=1;
   
   #(WAIT*2);

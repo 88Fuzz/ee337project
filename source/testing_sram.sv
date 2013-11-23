@@ -3,14 +3,31 @@ module testing_sram
   input wire read,
   input wire write,
   input wire [15:0] addr,
-  input wire [7:0] valueIn,
+  input wire [127:0] valueIn,
   input wire dump,
   input wire dumpNum,
-  output wire [7:0] valueOut
+  output wire [127:0] valueOut
 );
 reg tmp=0;
-reg [7:0]tmp2=200;
-on_chip_sram_wrapper tttttttt(
+reg [8:0]tmp2=511;
+
+//defparam sRAM.W_DATA_SIZE_WORDS=16;
+/*W_ADDR_SIZE_BITS  : natural := 16;    -- Address bus size in bits/pins with addresses corresponding to 
+																					-- the starting word of the accesss
+		W_WORD_SIZE_BYTES : natural := 1;   	-- Word size of the memory in bytes
+		W_DATA_SIZE_WORDS : natural := 1;   	-- Data bus size in "words"
+		W_READ_DELAY      : time    := 5 ns; 	-- Delay/latency per read access (total time between start of supplying address and when the data read from memory appears on the r_data port)
+																					-- Keep the 5 ns delay for 0.5u on-chip SRAM
+		W_WRITE_DELAY     : time    := 5 ns 
+*/
+
+on_chip_sram_wrapper #(
+              .W_ADDR_SIZE_BITS(16),
+              .W_WORD_SIZE_BYTES(1),
+              .W_DATA_SIZE_WORDS(16)
+            )
+            
+              sRAM(
               .init_file_number(0),
               .dump_file_number(dumpNum),
               .mem_clr(tmp),
