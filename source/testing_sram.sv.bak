@@ -3,14 +3,17 @@ module testing_sram
   input wire read,
   input wire write,
   input wire [15:0] addr,
-  input wire [7:0] valueIn,
+  input wire [127:0] valueIn,
   input wire dump,
   input wire dumpNum,
-  output wire [7:0] valueOut
+  output wire [127:0] valueOut
 );
 reg tmp=0;
-reg [7:0]tmp2=200;
-on_chip_sram_wrapper tttttttt(
+reg [8:0]tmp2=511;
+
+defparam sRAM.W_DATA_SIZE_WORDS=16;
+
+on_chip_sram_wrapper sRAM(
               .init_file_number(0),
               .dump_file_number(dumpNum),
               .mem_clr(tmp),
@@ -22,8 +25,8 @@ on_chip_sram_wrapper tttttttt(
               .read_enable(read),
               .write_enable(write),
               .address(addr),
-              .read_data(valueIn),
-              .write_data(valueOut)
+              .read_data(valueOut),
+              .write_data(valueIn)
               );
 
 endmodule

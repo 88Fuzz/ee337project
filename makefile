@@ -16,7 +16,11 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 # (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
+<<<<<<< HEAD
 COMPONENT_FILES	:= sbytes.sv testing_sram.sv rcon.sv G.sv keyExpansion.sv pts128to8.sv
+=======
+COMPONENT_FILES	:= sbytes.sv rcon.sv G.sv keyExpansion.sv
+>>>>>>> 6fa9e149988d8e2fec7dcdc9f7b1e94d98af127a
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
