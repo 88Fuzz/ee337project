@@ -23,6 +23,9 @@ module controller
 	output reg mcol_enable,
 	output reg around_enable
 );
+	reg lastround;
+	reg firstround;
+	reg roundinc;
 
 	typedef enum bit [4:0] {IDLEk, RADDRk, WAITk, READDATAk, IDLE, RADDR, WAIT, READDATA, CHECK, KEYEXP, SBYTES, SROWS, MCOL, AROUND, DONE, SEND} stateType;
 	stateType state, nextstate;
@@ -34,6 +37,13 @@ module controller
 			state <= nextstate;
 		end
 	end
+
+	flex_counter DUT (.clk(clk), .n_rst(n_rst), .count_enable(roundinc), .rollover_val(4'b1001), .sync(1'b0), .rollover_flag(lastround));
+	//First derived key = First round : AddRoundKey
+	//Second derived key = Second round : SubBytes, ShiftRows, MixColumns, AddRoundKey
+	//...
+	//Ninth derived key = Ninth round : SubBytes, ShiftRows, MixColumns, AddRoundKey
+	//Tenth derived key = Tenth round : SubBytes, ShiftRows, AddRoundKey
 
 	always@(state, addrMatch, HSELx, mWrite, dataReady, mRead, finished, keyexp_finished, sbytes_finished, srows_finished, mcol_finished, around_finished) begin
 		nextstate = state;
@@ -97,7 +107,11 @@ module controller
 			KEYEXP:
 			begin
 				if(keyexp_finished == 1'b1) begin
-					nextstate = SBYTES;
+					if(!firstround) begin
+						nextstate = SBYTES;
+					end else begin
+						nextstate = AROUND;
+					end
 				end
 			end
 			SBYTES:
@@ -109,7 +123,11 @@ module controller
 			SROWS:
 			begin
 				if(srows_finished == 1'b1) begin
-					nextstate = MCOL;
+					if(!lastround) begin
+						nextstate = MCOL;
+					end else begin
+						nextstate = AROUND;
+					end
 				end
 			end
 			MCOL:
@@ -145,10 +163,13 @@ module controller
 		read_enable = 1'b0;
     		readk_enable = 1'b0;
    		write_enable = 1'b0;
+		firstround = firstround;
+		roundinc = 1'b0;
     		case(state)
       		READDATA:
       		begin
         		read_enable = 1'b1;
+			firstround = 1'b1;
       		end
       		READDATAk:
      		begin
@@ -156,32 +177,34 @@ module controller
       		end
       		KEYEXP:
       		begin
+			roundinc = 1'b1;
         		keyexp_enable = 1'b1;
       		end
-      SBYTES:
-      begin
-        sbytes_enable = 1'b1;
-      end
-      SROWS:
-      begin
-        srows_enable = 1'b1;
-      end
-      MCOL:
-      begin
-        mcol_enable = 1'b1;
-      end
-      AROUND:
-      begin
-        around_enable = 1'b1;
-      end
-      DONE:
-      begin
-        HREADYOUT = 1'b1;
-      end
-      SEND:
-      begin
-        write_enable = 1'b1;
-      end
-    endcase
-  end
+		SBYTES:
+      		begin
+        		sbytes_enable = 1'b1;
+      		end
+      		SROWS:
+      		begin
+        		srows_enable = 1'b1;
+      		end
+      		MCOL:
+      		begin
+        		mcol_enable = 1'b1;
+      		end
+      		AROUND:
+      		begin
+			firstround = 1'b0;
+        		around_enable = 1'b1;
+      		end
+      		DONE:
+      		begin
+        		HREADYOUT = 1'b1;
+      		end
+      		SEND:
+      		begin
+        		write_enable = 1'b1;
+      		end
+    		endcase
+  	end
 endmodule

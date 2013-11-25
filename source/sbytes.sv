@@ -5,7 +5,6 @@
 // Lab Section: 002
 // Version:     1.0  Initial Design Entry
 // Description: Swap Bytes
-// Explanation: Because program will run on every positive edge of sbytes_enable, enable sbytes_enable 16 times for all bytes
 
 module sbytes
 (
