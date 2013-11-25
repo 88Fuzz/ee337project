@@ -101,8 +101,8 @@ architecture wrapper of on_chip_sram_wrapper is
 	constant INIT_FILENAMES	: i_filenames	:=
 	(
 		"example_dump_1.txt",
-		"example_init_2.txt",
-		"example_init_3.txt"
+		"example_dump_2.txt",
+		"example_dump_3.txt"
 	);
 	constant DUMP_FILENAMES	: d_filenames	:=
 	(

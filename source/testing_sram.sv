@@ -3,12 +3,12 @@ module testing_sram
   input wire read,
   input wire write,
   input wire [15:0] addr,
-  input wire [127:0] valueIn,
   input wire dump,
-  input wire dumpNum,
-  input wire inNum,
+  input wire [2:0] dumpNum,
+  input wire [2:0] inNum,
   input wire in,
-  output wire [127:0] valueOut
+  input wire [127:0] write_data,
+  output wire [127:0] read_data
 );
 reg tmp=0;
 reg [8:0]tmp2=511;
@@ -41,8 +41,8 @@ on_chip_sram_wrapper #(
               .read_enable(read),
               .write_enable(write),
               .address(addr),
-              .read_data(valueOut),
-              .write_data(valueIn)
+              .read_data(read_data),
+              .write_data(write_data)
               );
 
 endmodule

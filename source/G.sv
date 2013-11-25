@@ -44,7 +44,7 @@ always @(posedge clk, negedge n_rst) begin
     currState<=nextState;
 end
 
-always @(currState) begin//fill out this stuff
+always @(currState, rconOut, tmpByteOut, tmp, inputVal) begin//fill out this stuff
   case(currState)
     IDLE:begin
       done=0;
@@ -53,48 +53,48 @@ always @(currState) begin//fill out this stuff
     LEFTROTATE: begin
       done=0;
 //      tmp={inputVal[31:8], inputVal[7:0]};
-      tmp={inputVal[23:0],inputVal[31:24]};
+      tmp<={inputVal[23:0],inputVal[31:24]};
     //  sbytes_enable=0;
     end
     SENABLE1: begin
-      tmpByteIn=tmp[7:0];
+      tmpByteIn<=tmp[7:0];
       done=0;
     //  sbytes_enable=1;
     end
     SBYTE1: begin
-      tmp[7:0]=tmpByteOut;
+      tmp[7:0]<=tmpByteOut;
       done=0;
 //      sbytes_enable=1;
    //   sbytes_enable=0;
     end
     SENABLE2: begin
-      tmpByteIn=tmp[15:8];//doing some weird foot work to see if this will work
+      tmpByteIn<=tmp[15:8];//doing some weird foot work to see if this will work
       done=0;
     //  sbytes_enable=1;
     end
     SBYTE2: begin
-      tmp[15:8]=tmpByteOut;
+      tmp[15:8]<=tmpByteOut;
       done=0;
    //   sbytes_enable=0;
       
     end
     SENABLE3: begin
-      tmpByteIn=tmp[23:16];
+      tmpByteIn<=tmp[23:16];
       done=0;
    //   sbytes_enable=1;
     end
     SBYTE3: begin
-      tmp[23:16]=tmpByteOut;
+      tmp[23:16]<=tmpByteOut;
       done=0;
    //   sbytes_enable=0;
     end
     SENABLE4: begin
-      tmpByteIn=tmp[31:24];
+      tmpByteIn<=tmp[31:24];
       done=0;
    //   sbytes_enable=1;
     end
     SBYTE4: begin
-      tmp[31:24]=tmpByteOut;
+      tmp[31:24]<=tmpByteOut;
       done=0;
    //   sbytes_enable=0;
     end
@@ -105,7 +105,7 @@ always @(currState) begin//fill out this stuff
     RCON: begin
       done=0;
    //   sbytes_enable=0;
-      outputValue=tmp^{rconOut,24'h0};
+      outputValue<=tmp^{rconOut,24'h0};
     end
     DONE: begin
       done=1;
@@ -131,43 +131,43 @@ always @(currState, enable) begin
   case(currState)
     IDLE:begin
       if(enable)
-        nextState=LEFTROTATE;
+        nextState<=LEFTROTATE;
     end
     LEFTROTATE: begin
-      nextState=SENABLE1;
+      nextState<=SENABLE1;
     end
     SENABLE1: begin
-      nextState=SBYTE1;
+      nextState<=SBYTE1;
     end
     SBYTE1: begin
-      nextState=SENABLE2;
+      nextState<=SENABLE2;
     end
     SENABLE2: begin
-      nextState=SBYTE2;
+      nextState<=SBYTE2;
     end
     SBYTE2: begin
-      nextState=SENABLE3;
+      nextState<=SENABLE3;
     end
     SENABLE3: begin
-      nextState=SBYTE3;
+      nextState<=SBYTE3;
     end
     SBYTE3: begin
-      nextState=SENABLE4;
+      nextState<=SENABLE4;
     end
     SENABLE4: begin
-      nextState=SBYTE4;
+      nextState<=SBYTE4;
     end
     SBYTE4: begin
-      nextState=PRERCON;
+      nextState<=PRERCON;
     end
     PRERCON: begin
-      nextState=RCON;
+      nextState<=RCON;
     end
     RCON: begin
-      nextState=DONE;
+      nextState<=DONE;
     end
     DONE: begin
-      nextState=IDLE;
+      nextState<=IDLE;
     end
     default: begin
     end

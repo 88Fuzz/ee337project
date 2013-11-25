@@ -1,0 +1,3 @@
+16 bytes key			0-15
+16 bytes newround key		16-31
+16 bytes data			32-47
