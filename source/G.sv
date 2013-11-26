@@ -53,15 +53,17 @@ always @(posedge clk, negedge n_rst) begin
   end
 end
 
-always @(currState) begin//fill out this stuff
+always @(currState, currTmp, currOutputValue, inputVal, tmpByteOut, rconOut) begin//fill out this stuff
   case(currState)
     IDLE:begin
       done=0;
+      tmpByteIn=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     LEFTROTATE: begin
+      tmpByteIn=0;
       done=0;
 //      tmp={inputVal[31:8], inputVal[7:0]};
       nextTmp={inputVal[23:0],inputVal[31:24]};
@@ -76,6 +78,7 @@ always @(currState) begin//fill out this stuff
     //  sbytes_enable=1;
     end
     SBYTE1: begin
+      tmpByteIn=currTmp[7:0];
       nextTmp={currTmp[31:8],tmpByteOut};
       done=0;
       nextOutputValue=currOutputValue;
@@ -90,6 +93,7 @@ always @(currState) begin//fill out this stuff
     //  sbytes_enable=1;
     end
     SBYTE2: begin
+      tmpByteIn=currTmp[15:8];
       nextTmp={currTmp[31:16],tmpByteOut,currTmp[7:0]};//{currTmp[7:0],tmpByteOut,currTmp[31:16]};
       done=0;
       nextOutputValue=currOutputValue;
@@ -103,6 +107,7 @@ always @(currState) begin//fill out this stuff
    //   sbytes_enable=1;
     end
     SBYTE3: begin
+      tmpByteIn=currTmp[23:16];
       nextTmp={currTmp[31:24],tmpByteOut,currTmp[15:0]};//{currTmp[15:0],tmpByteOut,currTmp[31:24]};
       done=0;
       nextOutputValue=currOutputValue;
@@ -116,48 +121,56 @@ always @(currState) begin//fill out this stuff
    //   sbytes_enable=1;
     end
     SBYTE4: begin
+      tmpByteIn=currTmp[31:24];
       nextTmp={tmpByteOut,currTmp[23:0]};//{currTmp[23:0],tmpByteOut};
       done=0;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     PRERCON: begin
+      tmpByteIn=0;
       done=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     RCON: begin
+      tmpByteIn=0;
       done=0;
       nextTmp=currTmp;
    //   sbytes_enable=0;
       nextOutputValue=currTmp^{rconOut,24'h0};
     end
     DONE: begin
+      tmpByteIn=0;
       done=1;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     BLANK1: begin
+      tmpByteIn=0;
       done=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     BLANK2: begin
+      tmpByteIn=0;
       done=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     BLANK3: begin
+      tmpByteIn=0;
       done=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     default: begin
+      tmpByteIn=0;
       done=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
@@ -168,6 +181,7 @@ always @(currState) begin//fill out this stuff
 end
 
 always @(currState, enable) begin
+  nextState=IDLE;
   case(currState)
     IDLE:begin
       if(enable)
@@ -207,6 +221,15 @@ always @(currState, enable) begin
       nextState=DONE;
     end
     DONE: begin
+      nextState=IDLE;
+    end
+    BLANK1:begin
+      nextState=IDLE;
+    end
+    BLANK2: begin
+      nextState=IDLE;
+    end
+    BLANK3: begin
       nextState=IDLE;
     end
     default: begin
