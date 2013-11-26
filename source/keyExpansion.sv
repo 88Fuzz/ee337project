@@ -4,23 +4,34 @@ module keyExpansion
   input wire n_rst,
   input wire [3:0] roundNum,
   input wire enable,
-  output reg expansionDone
+  input wire [127:0]sramReadValue,
+  output reg expansionDone,
+  output reg [127:0]sramWriteValue,
+  output reg sramRead,
+  output reg sramWrite,
+  output reg sramDump,
+  output reg sramInit,
+  output reg [15:0]sramAddr,
+  output reg [2:0] sramDumpNum,
+  output reg [2:0] sramInitNum
 );
 
 reg [31:0] gReturn;
 reg [31:0] gEnter;
-reg [127:0] newKey;
-reg [127:0] oldKey;
-reg tmp;
-reg read;
-reg write;
-reg dump;
-reg init;
-reg [15:0] addr;
+reg [127:0] currNewKey;
+reg [127:0] nextNewKey;
+//reg [127:0] newKey;
+//reg [127:0] oldKey;
+//reg tmp;
+//reg read;
+//reg write;
+//reg dump;
+//reg init;
+//reg [15:0] addr;
 reg g_enable;
 reg g_done;
-reg [2:0] dumpNum;
-reg [2:0] inNum;
+//reg [2:0] dumpNum;
+//reg [2:0] inNum;
 
 G gggg(
        .clk(clk),
@@ -28,11 +39,11 @@ G gggg(
        .enable(g_enable),
        .inputVal(gEnter),
        .roundNum(roundNum),
-       .outputVal(gReturn),
+       .finalOutputVal(gReturn),
        .done(g_done)
        );
 
-testing_sram tttttttt(
+/*testing_sram tttttttt(
               .read(read),
               .write(write),
               .addr(addr),
@@ -42,36 +53,40 @@ testing_sram tttttttt(
               .in(init),
               .inNum(inNum),
               .read_data(oldKey)
-              );
+              );*/
 
-typedef enum bit[4:0] {IDLE, INITSRAM, DUMPSRAM, READSRAM1, READSRAMELSE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4,
-                         DONE, READSRAM, WRITESRAM, PREPSRAM} stateType;//will need states for loading and unloading SRAM
+typedef enum bit[4:0] {IDLE, READSRAM1, READSRAMELSEADDR, READSRAMELSE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4,
+                         DONE, WRITESRAM, PREPSRAM, READSRAM1AGAIN} stateType;//will need states for loading and unloading SRAM
 stateType currState, nextState;
+
 
 always @(posedge clk, negedge n_rst) begin
   if(n_rst==0) begin
     currState<=IDLE;
+    currNewKey<=0;
   end
   else begin
     currState<=nextState;
+    currNewKey<=nextNewKey;
   end
 end
 
 always@(currState)begin
   case(currState)
     IDLE: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=0;
-      dump=0;
-      init=0;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
-    INITSRAM: begin
+    /*INITSRAM: begin
       tmp=0;
       read=0;
       write=0;
@@ -82,134 +97,170 @@ always@(currState)begin
       g_enable=0;
       dumpNum=0;
       inNum=0;
-    end
+    end*/
     READSRAM1: begin
-      tmp=0;
-      read=1;
-      write=0;
+      sramWriteValue=0;
+      sramRead=1;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=0;
-      dump=0;
-      init=0;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
+    end
+    READSRAM1AGAIN: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;
+      g_enable=0;
+      nextNewKey=sramReadValue;
+    end
+    READSRAMELSEADDR: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=16;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;
+      g_enable=0;
+      nextNewKey=currNewKey;
     end
     READSRAMELSE: begin
-      tmp=0;
-      read=1;
-      write=0;
+      sramWriteValue=0;
+      sramRead=1;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=16;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=16;
-      dump=0;
-      init=0;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
     CHECKROUND: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=0;
-      dump=0;
-      init=0;
-      gEnter=oldKey[127:96];//THIS MAY BE BACKWARDS
+      gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
     G: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=16;
-      dump=0;
-      init=0;
       g_enable=1;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
     XOR1: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      newKey[31:0]=oldKey[31:0]^gReturn;
-      addr=16;
-      dump=0;
-      init=0;
+//      newKey[31:0]=oldKey[31:0]^gReturn;
+      nextNewKey={sramReadValue[127:32],sramReadValue[31:0]^gReturn};//////////////////////////////////
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
     end
     XOR2: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      newKey[63:32]=oldKey[63:32]^newKey[31:0];
-      addr=16;
-      dump=0;
+      //newKey[63:32]=oldKey[63:32]^newKey[31:0];
+      nextNewKey={sramReadValue[127:64],sramReadValue[63:32]^currNewKey[31:0],currNewKey[31:0]};
       g_enable=0;
-      init=0;
-      dumpNum=0;
-      inNum=0;
     end
     XOR3: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      newKey[95:64]=oldKey[95:64]^newKey[63:32];
-      addr=16;
-      dump=0;
-      init=0;
+//      newKey[95:64]=oldKey[95:64]^newKey[63:32];
+      nextNewKey={sramReadValue[127:96],sramReadValue[95:64]^currNewKey[63:32],currNewKey[63:0]};
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
     end
     XOR4: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      newKey[127:96]=oldKey[127:96]^newKey[95:64];
-      addr=16;
-      dump=0;
-      init=0;
+      //newKey[127:96]=oldKey[127:96]^newKey[95:64];
+      nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[63:0]};
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
     end
     PREPSRAM: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=currNewKey;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=16;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=16;
-      newKey=oldKey;
-      dump=0;
-      init=0;
+      //newKey=oldKey;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
     WRITESRAM: begin
-      tmp=0;
-      read=0;
-      write=1;
+      sramWriteValue=currNewKey;
+      sramRead=0;
+      sramWrite=1;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=16;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=16;
-      dump=0;
-      init=0;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
-    DUMPSRAM: begin
+    /*DUMPSRAM: begin
       tmp=0;
       read=0;
       write=0;
@@ -220,45 +271,54 @@ always@(currState)begin
       g_enable=0;
       dumpNum=0;
       inNum=0;
-    end
+    end*/
     DONE: begin
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=1;//probably need a new state for this after everything has been stored in sram
-      dump=0;
-      addr=16;
-      init=0;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=currNewKey;
     end
     default: begin//same as IDLE
-      tmp=0;
-      read=0;
-      write=0;
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
       expansionDone=0;
-      addr=0;
-      dump=0;
-      init=0;
       g_enable=0;
-      dumpNum=0;
-      inNum=0;
+      nextNewKey=0;
     end
   endcase
 end
 
-always @ (currState, enable, oldKey, roundNum, g_done) begin
+always @ (currState, enable, roundNum, g_done) begin
   case(currState)
     IDLE: begin
-      if(enable)
-        nextState=INITSRAM;//maybe a load state
+      if(enable) begin
+        nextState=CHECKROUND;//maybe a load state
+      end
     end
-    INITSRAM: begin
+/*    INITSRAM: begin
       nextState=CHECKROUND;
-    end
+    end*/
     READSRAM1: begin
+      nextState=READSRAM1AGAIN;
+    end
+    READSRAM1AGAIN: begin
       nextState=PREPSRAM;
+    end
+    READSRAMELSEADDR: begin
+      nextState=READSRAMELSE;
     end
     READSRAMELSE: begin
       nextState=G;
@@ -267,7 +327,7 @@ always @ (currState, enable, oldKey, roundNum, g_done) begin
       if(roundNum==1) begin
         nextState=READSRAM1;
       end else begin
-        nextState=READSRAMELSE;
+        nextState=READSRAMELSEADDR;
       end
     end
     G: begin
@@ -284,17 +344,17 @@ always @ (currState, enable, oldKey, roundNum, g_done) begin
       nextState=XOR4;//may need more than one clock cycle?????
     end
     XOR4: begin
-      nextState=WRITESRAM;//may need more than one clock cycle?????
+      nextState=PREPSRAM;//may need more than one clock cycle?????
     end
     PREPSRAM: begin
       nextState=WRITESRAM;
     end
     WRITESRAM: begin
-      nextState=DUMPSRAM;
-    end
-    DUMPSRAM: begin
       nextState=DONE;
     end
+    /*DUMPSRAM: begin
+      nextState=DONE;
+    end*/
     DONE: begin
       nextState=IDLE;
     end

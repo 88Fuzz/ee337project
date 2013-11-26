@@ -5,8 +5,8 @@ module testing_sram
   input wire [15:0] addr,
   input wire dump,
   input wire [2:0] dumpNum,
-  input wire [2:0] inNum,
-  input wire in,
+  input wire [2:0] initNum,
+  input wire init,
   input wire [127:0] write_data,
   output wire [127:0] read_data
 );
@@ -30,10 +30,10 @@ on_chip_sram_wrapper #(
             )
             
               sRAM(
-              .init_file_number(inNum),
+              .init_file_number(initNum),
               .dump_file_number(dumpNum),
               .mem_clr(tmp),
-              .mem_init(in),
+              .mem_init(init),
               .mem_dump(dump),
               .start_address(tmp),
               .last_address(tmp2),
