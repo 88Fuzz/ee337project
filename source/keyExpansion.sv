@@ -56,7 +56,7 @@ G gggg(
               );*/
 
 typedef enum bit[4:0] {IDLE, READSRAM1, READSRAMELSEADDR, READSRAMELSE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4,
-                         DONE, WRITESRAM, PREPSRAM, READSRAM1AGAIN} stateType;//will need states for loading and unloading SRAM
+                         DONE, PREPG, WRITESRAM, PREPSRAM, READSRAM1AGAIN} stateType;//will need states for loading and unloading SRAM
 stateType currState, nextState;
 
 
@@ -150,7 +150,7 @@ always@(currState)begin
       g_enable=0;
       nextNewKey=currNewKey;
     end
-    CHECKROUND: begin
+    PREPG: begin
       sramWriteValue=0;
       sramRead=0;
       sramWrite=0;
@@ -161,6 +161,20 @@ always@(currState)begin
       sramInitNum=0;
       expansionDone=0;
       gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
+      g_enable=0;
+      nextNewKey=currNewKey;
+    end
+    CHECKROUND: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;
+      //gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
       g_enable=0;
       nextNewKey=currNewKey;
     end
@@ -230,7 +244,7 @@ always@(currState)begin
       sramInitNum=0;
       expansionDone=0;
       //newKey[127:96]=oldKey[127:96]^newKey[95:64];
-      nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[63:0]};
+      nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[95:0]};
       g_enable=0;
     end
     PREPSRAM: begin
@@ -320,11 +334,14 @@ always @ (currState, enable, roundNum, g_done) begin
     READSRAMELSEADDR: begin
       nextState=READSRAMELSE;
     end
-    READSRAMELSE: begin
+    PREPG: begin
       nextState=G;
     end
+    READSRAMELSE: begin
+      nextState=PREPG;
+    end
     CHECKROUND: begin
-      if(roundNum==1) begin
+      if(roundNum==0) begin
         nextState=READSRAM1;
       end else begin
         nextState=READSRAMELSEADDR;

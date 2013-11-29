@@ -75,7 +75,7 @@ end
 
 initial begin
   #(WAIT);
-  tb_realInitNum=0;
+  tb_realInitNum=1;
   tb_realDumpNum=2;
   tb_realDump=0;
   tb_n_rst=0;
@@ -91,26 +91,202 @@ initial begin
   #(WAIT);
   #(WAIT/2);
   
-  tb_roundNum=1;
+  tb_roundNum=0;
   tb_enable=1;
   
   @(posedge tb_sramWrite);//110ns
-  $display("HERE");
-  tb_expected=128'h0F_0E_0D_0C_0B_0A_09_08_07_06_05_04_03_02_01_00;//128'h00_01_02_03_04_05_06_07_08_09_0A_0B_0C_0D_0E_0F;
+  tb_expected=128'h09_CF_4F_3C__AB_F7_15_88__28_AE_D2_A6__2B_7E_15_16;//128'h0F_0E_0D_0C_0B_0A_09_08_07_06_05_04_03_02_01_00;//128'h00_01_02_03_04_05_06_07_08_09_0A_0B_0C_0D_0E_0F;
+  #(WAIT/2);
   if(tb_expected==tb_sramWriteValue)
     $display("round %d works!", tb_roundNum);
   else
-    $error("round %d no works %d annd %d!", tb_roundNum);
+    $error("round %d no works!", tb_roundNum);
     
   @(posedge tb_expansionDone);
   tb_enable=0;
   
-  
-  tb_roundNum=2;
+  #(WAIT);
+  tb_roundNum=1;
+  #(WAIT*1.5);
   tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h2A_6C_76_05__23_A3_39_39__88_54_2C_B1__A0_FA_FE_17;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
   @(posedge tb_expansionDone);
   tb_enable=0;
-  $display("HERE2");
+  
+
+  
+  #(WAIT);
+  tb_roundNum=2;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h73_59_F6_7F__59_35_80_7A__7A_96_B9_43__F2_C2_95_F2;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=3;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h6D_7A_88_3B__1E_23_7E_44__47_16_FE_3E__3D_80_47_7D;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=4;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'hDB_0B_AD_00__B6_71_25_3B__A8_52_5B_7F__EF_44_A5_41;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=5;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h11_F9_15_BC__CA_F2_B8_BC__7C_83_9D_87__D4_D1_C6_F8;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=6;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'hCA_00_93_FD__DB_F9_86_41__11_0B_3E_FD__6D_88_A3_7A;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+
+  #(WAIT);
+  tb_roundNum=7;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h4E_A6_DC_4F__84_A6_4F_B2__5F_5F_C9_F3__4E_54_F7_0E;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=8;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h7F_8D_29_2F__31_2B_F5_60__B5_8D_BA_D2__EA_D2_73_21;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=9;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h2A_6C_76_05__23_A3_39_39__88_54_2C_B1__A0_FA_FE_17;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+  
+  
+  #(WAIT);
+  tb_roundNum=10;
+  #(WAIT*1.5);
+  tb_enable=1;
+  
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h2A_6C_76_05__23_A3_39_39__88_54_2C_B1__A0_FA_FE_17;
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round %d works!", tb_roundNum);
+  else
+    $error("round %d no works!", tb_roundNum);
+  
+  @(posedge tb_expansionDone);
+  tb_enable=0;
+
+
   
 end
 endmodule

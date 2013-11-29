@@ -9,9 +9,9 @@ reg tb_write;
 reg [15:0] tb_addr;
 reg [127:0] tb_valueIn;
 reg tb_dump;
-reg tb_dumpNum;
-reg tb_in;
-reg tb_inNum;
+reg [2:0]tb_dumpNum;
+reg tb_init;
+reg [2:0] tb_initNum;
 reg [127:0] tb_valueOut;
 reg [127:0] tb_expected;
 reg [7:0] tb_test_num=0;
@@ -21,16 +21,33 @@ testing_sram DUT
   .read(tb_read),
   .write(tb_write),
   .addr(tb_addr),
-  .valueIn(tb_valueIn),
+  .read_data(tb_valueIn),
   .dump(tb_dump),
   .dumpNum(tb_dumpNum),
-  .in(tb_in),
-  .inNum(tb_inNum),
-  .valueOut(tb_valueOut)
+  .init(tb_init),
+  .initNum(tb_initNum),
+  .write_data(tb_valueOut)
 );
 
 
 initial begin
+  tb_read=0;
+  tb_write=0;
+  tb_addr=0;
+  tb_valueIn=128'h09_CF_4F_3C__AB_F7_15_88__28_AE_D2_A6__2B_7E_15_16;
+  #(WAIT);
+  tb_write=1;
+  #(WAIT);
+  tb_write=0;
+  tb_dumpNum=1;
+  tb_dump=1;
+  #(WAIT);
+  tb_dump=0;
+  #(WAIT);
+  tb_read=1;
+  #(WAIT);
+  tb_read=0;
+  
   
   //writing to sram
   /*tb_read=0;
@@ -59,7 +76,7 @@ initial begin
   */
   
   
-  
+  /*
   //loading sram from file
   tb_read=0;
   tb_write=0;
@@ -120,7 +137,7 @@ initial begin
   tb_dump=1;
   
   #(WAIT);
-    
+    */
 end
 
 endmodule

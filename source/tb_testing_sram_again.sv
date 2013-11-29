@@ -9,9 +9,9 @@ reg tb_write;
 reg [15:0] tb_addr;
 reg [127:0] tb_valueIn;
 reg tb_dump;
-reg tb_dumpNum;
+reg [2:0] tb_dumpNum;
 reg tb_in;
-reg tb_inNum;
+reg [2:0] tb_inNum;
 reg [127:0] tb_valueOut;
 reg [127:0] tb_expected;
 reg [7:0] tb_test_num=0;
@@ -23,9 +23,9 @@ reg tb_write2;
 reg [15:0] tb_addr2;
 reg [127:0] tb_valueIn2;
 reg tb_dump2;
-reg tb_dumpNum2;
+reg [2:0]tb_dumpNum2;
 reg tb_in2;
-reg tb_inNum2;
+reg [2:0]tb_inNum2;
 reg [127:0] tb_valueOut2;
 reg [127:0] tb_expected2;
 reg [7:0] tb_test_num2=0;
@@ -35,12 +35,12 @@ testing_sram DUT
   .read(tb_read),
   .write(tb_write),
   .addr(tb_addr),
-  .valueIn(tb_valueIn),
+  .write_data(tb_valueIn),
   .dump(tb_dump),
   .dumpNum(tb_dumpNum),
-  .in(tb_in),
-  .inNum(tb_inNum),
-  .valueOut(tb_valueOut)
+  .init(tb_in),
+  .initNum(tb_inNum),
+  .read_data(tb_valueOut)
 );
 
 testing_sram_again DUT2
@@ -48,17 +48,34 @@ testing_sram_again DUT2
   .read(tb_read2),
   .write(tb_write2),
   .addr(tb_addr2),
-  .valueIn(tb_valueIn2),
+  .write_data(tb_valueIn2),
   .dump(tb_dump2),
   .dumpNum(tb_dumpNum2),
-  .in(tb_in2),
-  .inNum(tb_inNum2),
-  .valueOut(tb_valueOut2)
+  .init(tb_in2),
+  .initNum(tb_inNum2),
+  .read_data(tb_valueOut2)
 );
 
 
 initial begin
   
+  tb_read=0;
+  tb_write=0;
+  tb_addr=0;
+  tb_valueIn=128'h09_CF_4F_3C__AB_F7_15_88__28_AE_D2_A6__2B_7E_15_16;
+  #(WAIT);
+  tb_write=1;
+  #(WAIT);
+  tb_write=0;
+  tb_dumpNum=1;
+  tb_dump=1;
+  #(WAIT);
+  tb_dump=0;
+  #(WAIT);
+  tb_read=1;
+  #(WAIT);
+  tb_read=0;
+  /*
   //writing to sram
   tb_read=0;
   tb_write=0;
@@ -154,7 +171,7 @@ initial begin
   tb_dumpNum2=1;
   tb_dump2=1;
   
-  #(WAIT);
+  #(WAIT);*/
     
 end
 
