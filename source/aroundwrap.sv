@@ -38,6 +38,7 @@ module aroundwrap
 	addround DUT(n_rst(n_rst), around_enable(smallenable), subkey(keysend), olddata(datasend), newdata(datain));
 
 	always@(state) begin
+		nextstate = state;
 		case(state)
 			idle:
 			begin
