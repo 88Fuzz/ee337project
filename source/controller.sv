@@ -39,6 +39,7 @@ module controller
 	end
 
 	flex_counter DUT (.clk(clk), .n_rst(n_rst), .count_enable(roundinc), .rollover_val(4'b1001), .sync(1'b0), .rollover_flag(lastround));
+
 	//First derived key = First round : AddRoundKey
 	//Second derived key = Second round : SubBytes, ShiftRows, MixColumns, AddRoundKey
 	//...
