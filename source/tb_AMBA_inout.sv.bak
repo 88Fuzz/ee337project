@@ -1,0 +1,6 @@
+`timescale 1ns / 100ps
+
+module tb_AMBA_inout();
+
+localparam CLKPERIOD=10;
+localparam WAIT=5;
