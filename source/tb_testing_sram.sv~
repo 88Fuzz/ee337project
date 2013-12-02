@@ -1,0 +1,126 @@
+`timescale 1ns / 100ps
+
+module tb_testing_sram();
+  
+localparam WAIT=5;
+
+reg tb_read;
+reg tb_write;
+reg [15:0] tb_addr;
+reg [127:0] tb_valueIn;
+reg tb_dump;
+reg tb_dumpNum;
+reg tb_in;
+reg tb_inNum;
+reg [127:0] tb_valueOut;
+reg [127:0] tb_expected;
+reg [7:0] tb_test_num=0;
+
+testing_sram DUT
+(
+  .read(tb_read),
+  .write(tb_write),
+  .addr(tb_addr),
+  .valueIn(tb_valueIn),
+  .dump(tb_dump),
+  .dumpNum(tb_dumpNum),
+  .in(tb_in),
+  .inNum(tb_inNum),
+  .valueOut(tb_valueOut)
+);
+
+
+initial begin
+  
+  //writing to sram
+  /*tb_read=0;
+  tb_write=0;
+  #(WAIT);
+  
+  tb_addr=0;
+  tb_valueIn=128'h01_23_45_67_89_AB_CD_EF_FE_DC_BA_98_76_54_32_10;
+  tb_write=1;
+  
+  #(WAIT);
+  
+  tb_write=0;
+  tb_addr=16;
+  tb_valueIn=128'hFF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF;
+  tb_write=1;
+  
+  #(WAIT);
+  
+  tb_write=0;
+  tb_addr=32;
+  tb_valueIn=128'hAA_BB_CC_DD_EE_FF_00_99_88_77_66_55_44_33_22_11;
+  tb_write=1;
+  
+  #(WAIT);
+  */
+  
+  
+  
+  //loading sram from file
+  tb_read=0;
+  tb_write=0;
+  tb_in=1;
+  tb_inNum=0;
+  #(WAIT);
+  tb_in=0;
+  #(WAIT);
+  
+  
+  //reading from sram
+  tb_write=0;
+  tb_addr=0;
+  tb_expected=128'h01_23_45_67_89_AB_CD_EF_FE_DC_BA_98_76_54_32_10;
+  tb_read=1;
+  
+  #(WAIT*2);
+  
+  tb_test_num=tb_test_num+1;
+  if(tb_expected==tb_valueOut)
+    $display("Test %d good", tb_test_num);
+  else
+    $error("Test %d bad", tb_test_num);
+  
+  tb_read=0;
+  tb_addr=16;
+  tb_expected=128'hFF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF_FF;
+  tb_read=1;
+  
+  #(WAIT*2);
+  
+  tb_test_num=tb_test_num+1;
+  if(tb_expected==tb_valueOut)
+    $display("Test %d good", tb_test_num);
+  else
+    $error("Test %d bad", tb_test_num);
+    
+  
+  tb_read=0;
+  tb_addr=32;
+  tb_expected=128'hAA_BB_CC_DD_EE_FF_00_99_88_77_66_55_44_33_22_11;
+  tb_read=1;
+  
+  #(WAIT*2);
+  
+  tb_test_num=tb_test_num+1;
+  if(tb_expected==tb_valueOut)
+    $display("Test %d good", tb_test_num);
+  else
+    $error("Test %d bad", tb_test_num);
+    
+  tb_read=0;
+  
+  
+  //dumping sram
+  #(WAIT);
+  tb_dumpNum=0;
+  tb_dump=1;
+  
+  #(WAIT);
+    
+end
+
+endmodule

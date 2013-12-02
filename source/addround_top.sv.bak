@@ -1,0 +1,34 @@
+module addround_top
+(
+  input wire clk; 
+  input wire n_rst; 
+  input wire around_enable,
+  output reg round_done
+  ); 
+  
+  reg read;
+  reg write;
+  reg [15:0] addr;
+  reg [127:0] valueIn;
+  reg dump;
+  reg in;
+  reg dumpNum = 0;
+  reg inNum = 0;
+  reg [127:0] valueOut;  
+  
+  
+  testing_sram DUT
+(
+  .read(read),
+  .write(write),
+  .addr(addr),
+  .valueIn(valueIn),
+  .dump(dump),
+  .dumpNum(dumpNum),
+  .in(in),
+  .inNum(inNum),
+  .valueOut(valueOut)
+);
+
+
+typedef enum {IDLE,PREP,ACKCHK,ACKBACK,NACKBACK,START_TRANSMISSION,TRANSMIT,CHECK,CHECKACK,ACKPHASE,FIFOLOAD} stateType;

@@ -55,37 +55,20 @@ module aroundwrap
 					nextstate = readsramkey1;
 				end
 			end
-			
 			readsramkey1:
 			begin
-			  nextstate = readsramkey2;
-			end 
-			
-			readsramkey2:
-			begin 
-			  nextstate = readsramkey3;
-			end
-			
-			readsramkey3:
-			begin  
-			   nextstate = readsramdata1;
-			end 
-			
-			readsramdata1: 
-			begin
-			   nextstate = readsramdata2;
-			end 
-			
-			readsramdata2: 
-			begin
-			   nextstate = readsramdata3;
-			end 
-			
-			readsramdata3: 
-			begin
-			   nextstate = byte1s;
-			end 
-			
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 16;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  sramread_data = 0; 
+			   
+			  
+			  
 			byte1s:
 			begin
 				nextstate = byte1c;
@@ -212,16 +195,8 @@ module aroundwrap
 			end
 			byte16c:
 			begin
-				nextstate = writesram1;
+				nextstate = finito;
 			end
-			writesram1:
-			begin
-			  nextstate = writesram2; 
-			end
-			writesram2: 
-			begin
-			  nextstate = finito;
-			end    
 			finito:
 			begin
 				nextstate = idle;
@@ -239,89 +214,6 @@ module aroundwrap
 				smallenable = 1'b0;
 				keysend = '0;
 				datasend = '0;
-				
-				readsramkey1:
-			begin
-			  sramread = 0;
-			  sramwrite = 0;
-			  sramaddr = 16;
-			  sramdump = 0; 
-			  sramdumpnum = 0; 
-			  sraminitnum = 0; 
-			  sraminit = 0;
-			  sramwrite_data = 0;  
-			  nextstate = readsramkey2;  
-			end
-			
-			readsramkey2:
-			begin
-			  sramread = 1;
-			  sramwrite = 0;
-			  sramaddr = 16;
-			  sramdump = 0; 
-			  sramdumpnum = 0; 
-			  sraminitnum = 0; 
-			  sraminit = 0;
-			  sramwrite_data = 0;  
-			  nextstate = readsramkey3;  
-			end
-			
-			readsramkey3:
-			begin
-			  sramread = 0;
-			  sramwrite = 0;
-			  sramaddr = 0;
-			  sramdump = 0; 
-			  sramdumpnum = 0; 
-			  sraminitnum = 0; 
-			  sraminit = 0;
-			  sramwrite_data = 0; 
-			  subkey = sramread_data;  
-			  nextstate = readsramdata1;  
-			end 
-			
-			readsramdata1:
-			begin
-			  sramread = 0;
-			  sramwrite = 0;
-			  sramaddr = 32;
-			  sramdump = 0; 
-			  sramdumpnum = 0; 
-			  sraminitnum = 0; 
-			  sraminit = 0;
-			  sramwrite_data = 0; 
-			  sramread_data = 0; 
-			  nextstate = readsramdata2;  
-			end
-			
-			readsramdata2:
-			begin
-			  sramread = 1;
-			  sramwrite = 0;
-			  sramaddr = 32;
-			  sramdump = 0; 
-			  sramdumpnum = 0; 
-			  sraminitnum = 0; 
-			  sraminit = 0;
-			  sramwrite_data = 0; 
-			  sramread_data = 0; 
-			  nextstate = readsramdata3;  
-			end
-			
-			readsramdata3:
-			begin
-			  sramread = 0;
-			  sramwrite = 0;
-			  sramaddr = 0;
-			  sramdump = 0; 
-			  sramdumpnum = 0; 
-			  sraminitnum = 0; 
-			  sraminit = 0;
-			  sramwrite_data = 0; 
-			  sramread_data = olddata; 
-			  nextstate = byte1c;  
-			end 
-			  
 			byte1s:
 			begin
 				keysend = subkey[7:0];
