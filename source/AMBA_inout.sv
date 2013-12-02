@@ -47,7 +47,7 @@ testing_sram SexyRandomAccessMemory
 
 
 
-typedef enum bit[3:0] {IDLE,WRITEKSETUP, WRITEK, WRITEDSETUP, WRITED, READDSETUP, READD, HREADY, ERROR} stateType;
+typedef enum bit[3:0] {IDLE,WRITEKSETUP, WRITEK, WRITEDSETUP, WRITED, READDSETUP, READD, DISPLAYD, HREADY, ERROR} stateType;
 stateType currState, nextState;
 
 always @(posedge clk, negedge n_rst) begin
@@ -151,6 +151,19 @@ always @ (currState) begin
       HRESP=0;
       write_data=0;
     end
+    DISPLAYD: begin
+      read=0;
+      write=0;
+      addr=0;
+      dumpNum=0;
+      initNum=0;
+      dump=0;
+      init=0;
+      HRDATA=read_data;
+      HREADYOUT=0;
+      HRESP=0;
+      write_data=0;
+    end
     ERROR: begin
       read=0;
       write=0;
@@ -173,7 +186,7 @@ always @ (currState) begin
       dump=0;
       init=0;
       HRDATA=0;
-      HREADYOUT=0;
+      HREADYOUT=1;
       HRESP=0;
       write_data=0;
     end
@@ -225,6 +238,9 @@ always @(currState, writek_enable, writek_enable, readd_enable, hresp_error, hre
       nextState=READD;
     end
     READD: begin//probably have to wait until the AMBA clock goes high/low
+      nextState=DISPLAYD;
+    end
+    DISPLAYD: begin
       nextState=IDLE;
     end
     ERROR: begin

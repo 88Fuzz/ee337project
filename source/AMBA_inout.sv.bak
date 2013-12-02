@@ -17,8 +17,8 @@ module AMBA_inout
   output reg write,
   output reg [15:0] addr,
   output reg dump,
-  output reg [2:0] dumpNum;
-  output reg [2:0] initNum;
+  output reg [2:0] dumpNum,
+  output reg [2:0] initNum,
   output reg init
 );
 
@@ -173,7 +173,7 @@ always @ (currState) begin
       dump=0;
       init=0;
       HRDATA=0;
-      HREADYOUT=0;
+      HREADYOUT=1;
       HRESP=0;
       write_data=0;
     end
