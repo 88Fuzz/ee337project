@@ -10,8 +10,11 @@ module testing_sram
   input wire [127:0] write_data,
   output wire [127:0] read_data
 );
-reg tmp=0;
-reg [8:0]tmp2=511;
+wire tmp;
+wire [8:0]tmp2;
+
+assign tmp=0;
+assign tmp2=511;
 
 //defparam sRAM.W_DATA_SIZE_WORDS=16;
 /*W_ADDR_SIZE_BITS  : natural := 16;    -- Address bus size in bits/pins with addresses corresponding to 

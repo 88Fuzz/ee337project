@@ -21,7 +21,7 @@ G DUT(
   .enable(tb_enable),
   .inputVal(tb_inputVal),
   .roundNum(tb_roundNum),
-  .outputVal(tb_outputVal),
+  .finalOutputVal(tb_outputVal),
   .done(tb_done)
 );
 

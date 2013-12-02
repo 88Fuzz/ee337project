@@ -23,6 +23,7 @@ reg [7:0] tmpByteOut;
 reg [31:0] currOutputValue;
 reg [31:0] nextOutputValue;
 reg [7:0] rconOut;
+reg nextDone;
 //reg [7:0] currRconOut;//will this work??
 //reg tmpRconOut=currRconOut;
 
@@ -46,23 +47,27 @@ always @(posedge clk, negedge n_rst) begin
     currState<=IDLE;
     currTmp<=0;
     currOutputValue<=0;
+    done<=0;
   end else begin
     currState<=nextState;
     currTmp<=nextTmp;
     currOutputValue<=nextOutputValue;
+    done<=nextDone;
   end
 end
 
-always @(currState) begin//fill out this stuff
+always @(currState, currTmp, currOutputValue, inputVal, tmpByteOut, rconOut) begin//fill out this stuff
   case(currState)
     IDLE:begin
-      done=0;
+      nextDone=0;
+      tmpByteIn=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     LEFTROTATE: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
 //      tmp={inputVal[31:8], inputVal[7:0]};
       nextTmp={inputVal[23:0],inputVal[31:24]};
       nextOutputValue=currOutputValue;
@@ -70,95 +75,106 @@ always @(currState) begin//fill out this stuff
     end
     SENABLE1: begin
       tmpByteIn=currTmp[7:0];
-      done=0;
+      nextDone=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     //  sbytes_enable=1;
     end
     SBYTE1: begin
-      nextTmp={tmpByteOut,currTmp[31:8]};
-      done=0;
+      tmpByteIn=currTmp[7:0];
+      nextTmp={currTmp[31:8],tmpByteOut};
+      nextDone=0;
       nextOutputValue=currOutputValue;
 //      sbytes_enable=1;
    //   sbytes_enable=0;
     end
     SENABLE2: begin
       tmpByteIn=currTmp[15:8];//doing some weird foot work to see if this will work
-      done=0;
+      nextDone=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     //  sbytes_enable=1;
     end
     SBYTE2: begin
-      nextTmp={currTmp[7:0],tmpByteOut,currTmp[31:16]};
-      done=0;
+      tmpByteIn=currTmp[15:8];
+      nextTmp={currTmp[31:16],tmpByteOut,currTmp[7:0]};//{currTmp[7:0],tmpByteOut,currTmp[31:16]};
+      nextDone=0;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     SENABLE3: begin
       tmpByteIn=currTmp[23:16];
-      done=0;
+      nextDone=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=1;
     end
     SBYTE3: begin
-      nextTmp={currTmp[15:0],tmpByteOut,currTmp[31:24]};
-      done=0;
+      tmpByteIn=currTmp[23:16];
+      nextTmp={currTmp[31:24],tmpByteOut,currTmp[15:0]};//{currTmp[15:0],tmpByteOut,currTmp[31:24]};
+      nextDone=0;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     SENABLE4: begin
       tmpByteIn=currTmp[31:24];
-      done=0;
+      nextDone=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=1;
     end
     SBYTE4: begin
-      nextTmp={currTmp[23:0],tmpByteOut};
-      done=0;
+      tmpByteIn=currTmp[31:24];
+      nextTmp={tmpByteOut,currTmp[23:0]};//{currTmp[23:0],tmpByteOut};
+      nextDone=0;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     PRERCON: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     RCON: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
       nextTmp=currTmp;
    //   sbytes_enable=0;
       nextOutputValue=currTmp^{rconOut,24'h0};
     end
     DONE: begin
-      done=1;
+      tmpByteIn=0;
+      nextDone=1;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
    //   sbytes_enable=0;
     end
     BLANK1: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     BLANK2: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     BLANK3: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
     end
     default: begin
-      done=0;
+      tmpByteIn=0;
+      nextDone=0;
 //      sbytes_enable=0;
       nextTmp=currTmp;
       nextOutputValue=currOutputValue;
@@ -168,6 +184,7 @@ always @(currState) begin//fill out this stuff
 end
 
 always @(currState, enable) begin
+  nextState=IDLE;
   case(currState)
     IDLE:begin
       if(enable)
@@ -207,6 +224,15 @@ always @(currState, enable) begin
       nextState=DONE;
     end
     DONE: begin
+      nextState=IDLE;
+    end
+    BLANK1:begin
+      nextState=IDLE;
+    end
+    BLANK2: begin
+      nextState=IDLE;
+    end
+    BLANK3: begin
       nextState=IDLE;
     end
     default: begin

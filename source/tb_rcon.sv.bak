@@ -13,8 +13,8 @@ rcon DUT(
 
 initial
 begin
-  tb_roundNum=1;
-  tb_expected_out=1;
+  tb_roundNum=2;
+  tb_expected_out=8'h01;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -26,7 +26,7 @@ begin
 
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=2;
+  tb_expected_out=8'h02;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -38,7 +38,7 @@ begin
   
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=4;
+  tb_expected_out=8'h04;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -51,7 +51,7 @@ begin
   
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=8;
+  tb_expected_out=8'h08;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -63,7 +63,7 @@ begin
     
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=16;
+  tb_expected_out=8'h10;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -75,7 +75,7 @@ begin
       
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=32;
+  tb_expected_out=8'h20;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -87,7 +87,7 @@ begin
     
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=64;
+  tb_expected_out=8'h40;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -99,7 +99,7 @@ begin
     
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=128;
+  tb_expected_out=8'h80;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -111,7 +111,7 @@ begin
     
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=256;
+  tb_expected_out=8'h1B;
   #(WAIT);
   
   if(tb_out==tb_expected_out)
@@ -124,7 +124,7 @@ begin
     
 
   tb_roundNum=tb_roundNum+1;
-  tb_expected_out=512;
+  tb_expected_out=8'h36;
   #(WAIT);
   
   if(tb_out==tb_expected_out)

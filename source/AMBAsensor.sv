@@ -1,7 +1,5 @@
 module AMBAsensor
 (
-  input wire clk,
-  input wire n_rst,
   input wire [31:0] HADDR,
   input wire [2:0] HBURST,
   input wire HMASTLOCK,
@@ -18,16 +16,16 @@ module AMBAsensor
   output reg invalid
 );
 
-localparam addr=32'hF0F0F0F0;
-wire error1, error2;
+localparam addr=32'hF0_F0_F0_F0;
+wire error1, error2, error3;
 
-assign addrMatch = (addr==HADDR) ? 1'b1 : 1'b0;
+assign addrMatch = (addr==HADDR ? 1'b1 : 1'b0);
 assign mWrite=HWRITE;
 assign mRead=~HWRITE;
 assign dataReady=HREADY;
-assign error1=HBURST & 3'b000;
-assign error2=HSIZE & 3'b100;
-assign error3=HTRANS & 2'b10;
+assign error1=(HBURST==3'b000 ? 1'b0 : 1'b1);
+assign error2=(HSIZE==3'b100 ? 1'b0 : 1'b1);
+assign error3=(HTRANS==2'b10 ? 1'b0 : 1'b1);
 assign invalid=error1 | error2 | error3;
 
 endmodule

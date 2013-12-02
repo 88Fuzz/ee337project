@@ -54,8 +54,9 @@ G gggg(
               .inNum(inNum),
               .read_data(oldKey)
               );*/
-
+                      //0        1              2           3                  4    5    6   7       8     9
 typedef enum bit[4:0] {IDLE, READSRAM1, READSRAMELSEADDR, READSRAMELSE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4,
+  //                      10    11         12     13           14
                          DONE, PREPG, WRITESRAM, PREPSRAM, READSRAM1AGAIN} stateType;//will need states for loading and unloading SRAM
 stateType currState, nextState;
 
@@ -71,7 +72,7 @@ always @(posedge clk, negedge n_rst) begin
   end
 end
 
-always@(currState)begin
+always@(currState, currNewKey, sramReadValue, gReturn)begin
   case(currState)
     IDLE: begin
       sramWriteValue=0;
@@ -85,6 +86,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     /*INITSRAM: begin
       tmp=0;
@@ -110,6 +112,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     READSRAM1AGAIN: begin
       sramWriteValue=0;
@@ -123,6 +126,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=sramReadValue;
+      gEnter=0;
     end
     READSRAMELSEADDR: begin
       sramWriteValue=0;
@@ -136,6 +140,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     READSRAMELSE: begin
       sramWriteValue=0;
@@ -149,6 +154,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     PREPG: begin
       sramWriteValue=0;
@@ -177,6 +183,7 @@ always@(currState)begin
       //gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     G: begin
       sramWriteValue=0;
@@ -190,6 +197,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=1;
       nextNewKey=currNewKey;
+      gEnter=sramReadValue[127:96];
     end
     XOR1: begin
       sramWriteValue=0;
@@ -204,6 +212,7 @@ always@(currState)begin
 //      newKey[31:0]=oldKey[31:0]^gReturn;
       nextNewKey={sramReadValue[127:32],sramReadValue[31:0]^gReturn};//////////////////////////////////
       g_enable=0;
+      gEnter=0;
     end
     XOR2: begin
       sramWriteValue=0;
@@ -218,6 +227,7 @@ always@(currState)begin
       //newKey[63:32]=oldKey[63:32]^newKey[31:0];
       nextNewKey={sramReadValue[127:64],sramReadValue[63:32]^currNewKey[31:0],currNewKey[31:0]};
       g_enable=0;
+      gEnter=0;
     end
     XOR3: begin
       sramWriteValue=0;
@@ -232,6 +242,7 @@ always@(currState)begin
 //      newKey[95:64]=oldKey[95:64]^newKey[63:32];
       nextNewKey={sramReadValue[127:96],sramReadValue[95:64]^currNewKey[63:32],currNewKey[63:0]};
       g_enable=0;
+      gEnter=0;
     end
     XOR4: begin
       sramWriteValue=0;
@@ -246,6 +257,7 @@ always@(currState)begin
       //newKey[127:96]=oldKey[127:96]^newKey[95:64];
       nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[95:0]};
       g_enable=0;
+      gEnter=0;
     end
     PREPSRAM: begin
       sramWriteValue=currNewKey;
@@ -260,6 +272,7 @@ always@(currState)begin
       //newKey=oldKey;
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     WRITESRAM: begin
       sramWriteValue=currNewKey;
@@ -273,6 +286,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     /*DUMPSRAM: begin
       tmp=0;
@@ -298,6 +312,7 @@ always@(currState)begin
       expansionDone=1;//probably need a new state for this after everything has been stored in sram
       g_enable=0;
       nextNewKey=currNewKey;
+      gEnter=0;
     end
     default: begin//same as IDLE
       sramWriteValue=0;
@@ -311,6 +326,7 @@ always@(currState)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=0;
+      gEnter=0;
     end
   endcase
 end
@@ -318,6 +334,7 @@ end
 always @ (currState, enable, roundNum, g_done) begin
   case(currState)
     IDLE: begin
+      nextState=IDLE;
       if(enable) begin
         nextState=CHECKROUND;//maybe a load state
       end
@@ -341,13 +358,14 @@ always @ (currState, enable, roundNum, g_done) begin
       nextState=PREPG;
     end
     CHECKROUND: begin
-      if(roundNum==0) begin
+      if(roundNum==1) begin
         nextState=READSRAM1;
       end else begin
         nextState=READSRAMELSEADDR;
       end
     end
     G: begin
+      nextState=G;
       if(g_done)
         nextState=XOR1;
     end

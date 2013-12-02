@@ -1,0 +1,255 @@
+`timescale 1ns / 100ps
+
+module tb_AMBAsensor();
+
+localparam CLKPERIOD=10;
+localparam WAIT=5;
+
+reg [31:0]tb_HADDR;
+reg [2:0]tb_HBURST;
+reg tb_HMASTLOCK;
+reg [3:0]tb_HPORT;
+reg [2:0]tb_HSIZE;
+reg [1:0]tb_HTRANS;
+reg tb_HWRITE;
+reg tb_HSELx;
+reg tb_HREADY;
+reg tb_addrMatch;
+reg tb_mWrite;
+reg tb_mRead;
+reg tb_dataReady;
+reg tb_invalid;
+reg [15:0]tb_testNum;
+
+AMBAsensor DUT
+(
+  .HADDR(tb_HADDR),
+  .HBURST(tb_HBURST),
+  .HMASTLOCK(tb_HMASTLOCK),
+  .HPORT(tb_HPORT),
+  .HSIZE(tb_HSIZE),
+  .HTRANS(tb_HTRANS),
+  .HWRITE(tb_HWRITE),//high=write, low=read
+  .HSELx(tb_HSELx),
+  .HREADY(tb_HREAD),
+  .addrMatch(tb_addrMatch),
+  .mWrite(tb_mWrite),
+  .mRead(tb_mRead),
+  .dataReady(tb_dataReady),
+  .invalid(tb_invalid)
+);
+
+initial begin  
+  tb_HADDR=0;
+  tb_HBURST=0;
+  tb_HMASTLOCK=0;
+  tb_HPORT=0;
+  tb_HSIZE=0;
+  tb_HTRANS=0;
+  tb_HWRITE=1;
+  tb_HSELx=0;
+  tb_HREADY=0;
+  
+  #(WAIT);
+  tb_testNum=1;//test 1
+  if(tb_addrMatch==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_testNum=tb_testNum+1;//test 2
+  if(tb_mWrite==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_testNum=tb_testNum+1;//test 3
+  if(tb_mRead==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_HBURST=3'b000;
+  tb_HSIZE=3'b100;
+  tb_HTRANS=2'b10;
+  tb_HADDR=32'hF0_F0_F0_F0;
+  
+  #(WAIT);
+  
+  tb_testNum=tb_testNum+1;//test 4
+  if(tb_invalid==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_testNum=tb_testNum+1;//test 5
+  if(tb_addrMatch==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_testNum=tb_testNum+1;//test 6
+  if(tb_mWrite==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_testNum=tb_testNum+1;//test 7
+  if(tb_mRead==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HADDR=0;
+  
+  #(WAIT);
+  
+  tb_testNum=tb_testNum+1;//test 8
+  if(tb_addrMatch==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  
+  tb_HBURST=3'b000;
+  tb_HSIZE=3'b100;
+  tb_HTRANS=2'b10;
+  tb_HADDR=32'hF0_F0_F0_F0;
+  
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 9
+  if(tb_addrMatch==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_HBURST=3'b010;
+  
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 10
+  if(tb_addrMatch==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_testNum=tb_testNum+1;//test 11
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HBURST=3'b100;
+  
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 12
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_HBURST=3'b001;
+  
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 13
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  
+  tb_HBURST=3'b000;
+  
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 14
+  if(tb_invalid==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HSIZE=3'b000;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 15
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HSIZE=3'b010;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 16
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HSIZE=3'b001;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 17
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HSIZE=3'b100;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 18
+  if(tb_invalid==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+    
+  
+  tb_HTRANS=2'b00;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 19
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HTRANS=2'b01;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 20
+  if(tb_invalid==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HTRANS=2'b10;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 21
+  if(tb_invalid==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+    
+  tb_HREADY=1;
+  #(WAIT);
+  tb_testNum=tb_testNum+1;//test 22
+  if(tb_dataReady==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_HWRITE=0;
+  #(WAIT);
+    
+  tb_testNum=tb_testNum+1;//test 23
+  if(tb_mWrite==0)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+  tb_testNum=tb_testNum+1;//test 24
+  if(tb_mRead==1)
+    $display("test %d success", tb_testNum);
+  else
+    $error("test %d failed", tb_testNum);
+  
+end
+/*HBURST==3'b000
+  HSIZE==3'b100
+  HTRANS==2'b10 */
+
+endmodule

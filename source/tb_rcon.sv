@@ -13,7 +13,7 @@ rcon DUT(
 
 initial
 begin
-  tb_roundNum=1;
+  tb_roundNum=2;
   tb_expected_out=8'h01;
   #(WAIT);
   
@@ -123,7 +123,7 @@ begin
   
     
 
-  tb_roundNum=tb_roundNum+1;
+  tb_roundNum=0;
   tb_expected_out=8'h36;
   #(WAIT);
   
