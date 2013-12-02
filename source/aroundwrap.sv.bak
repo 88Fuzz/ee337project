@@ -1,44 +1,48 @@
 // $Id: $
-// File name:   sbyteswrap.sv
-// Created:     11/30/2013
+// File name:   aroundwrap.sv
+// Created:     11/29/2013
 // Author:      Josh Nichols
 // Lab Section: 002
 // Version:     1.0  Initial Design Entry
-// Description: Wrapper for sbytes
+// Description: Wrapper to make sure Add Round Key is called the correct number of times
 
-module sybteswrap
+module aroundwrap
 (
 	input wire clk,
 	input wire n_rst,
-	input wire sbytes_enable,
+	input wire around_enable,
+	input wire [127:0] subkey,
 	input wire [127:0] olddata,
 	output reg [127:0] newdata,
-	output reg sbytes_finished
+	output reg around_finished
 );
 
 	typedef enum bit [7:0] {idle, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, finito} stateType;
-  stateType state, nextstate;
+	stateType state, nextstate;
 
+	reg [127:0] datahold;
 	reg [7:0] datasend;
 	reg [7:0] datain;
+	reg [7:0] keysend;
 	reg smallenable;
 
 	always@(posedge clk, negedge n_rst) begin
 		if(n_rst == 1'b0) begin
-			state = idle;
+			newdata <= olddata;
+			state <= idle;
 		end else begin
-			state = nextstate;
+			state <= nextstate;
 		end
 	end
 
-	sbytes DUT (.olddata(datasend), .newdata(datain));
+	addround DUT(.n_rst(n_rst), .around_enable(smallenable), .subkey(keysend), .olddata(datasend), .newdata(datain));
 
 	always@(state) begin
 		nextstate = state;
 		case(state)
 			idle:
 			begin
-				if(sbytes_enable) begin
+				if(around_enable == 1'b1) begin
 					nextstate = byte1s;
 				end
 			end
@@ -177,16 +181,20 @@ module sybteswrap
 		endcase
 	end
 
+
 	always@(state) begin
-		smallenable = 1'b0;
-		sbytes_finished = 1'b0;
+		smallenable = 1'b1;
+		around_finished = 1'b0;
 		case(state)
 			idle:
 			begin
+				smallenable = 1'b0;
+				keysend = '0;
 				datasend = '0;
 			end
 			byte1s:
 			begin
+				keysend = subkey[7:0];
 				datasend = olddata[7:0];
 				smallenable = 1'b1;
 			end
@@ -196,6 +204,7 @@ module sybteswrap
 			end
 			byte2s:
 			begin
+				keysend = subkey[15:8];
 				datasend = olddata[15:8];
 				smallenable = 1'b1;
 			end
@@ -205,6 +214,7 @@ module sybteswrap
 			end
 			byte3s:
 			begin
+				keysend = subkey[23:16];
 				datasend = olddata[23:16];
 				smallenable = 1'b1;
 			end
@@ -214,6 +224,7 @@ module sybteswrap
 			end
 			byte4s:
 			begin
+				keysend = subkey[31:24];
 				datasend = olddata[31:24];
 				smallenable = 1'b1;
 			end
@@ -223,6 +234,7 @@ module sybteswrap
 			end
 			byte5s:
 			begin
+				keysend = subkey[39:32];
 				datasend = olddata[39:32];
 				smallenable = 1'b1;
 			end
@@ -232,6 +244,7 @@ module sybteswrap
 			end
 			byte6s:
 			begin
+				keysend = subkey[47:40];
 				datasend = olddata[47:40];
 				smallenable = 1'b1;
 			end
@@ -241,6 +254,7 @@ module sybteswrap
 			end
 			byte7s:
 			begin
+				keysend = subkey[55:48];
 				datasend = olddata[55:48];
 				smallenable = 1'b1;
 			end
@@ -250,6 +264,7 @@ module sybteswrap
 			end
 			byte8s:
 			begin
+				keysend = subkey[63:56];
 				datasend = olddata[63:56];
 				smallenable = 1'b1;
 			end
@@ -259,6 +274,7 @@ module sybteswrap
 			end
 			byte9s:
 			begin
+				keysend = subkey[71:64];
 				datasend = olddata[71:64];
 				smallenable = 1'b1;
 			end
@@ -268,6 +284,7 @@ module sybteswrap
 			end
 			byte10s:
 			begin
+				keysend = subkey[79:72];
 				datasend = olddata[79:72];
 				smallenable = 1'b1;
 			end
@@ -277,6 +294,7 @@ module sybteswrap
 			end
 			byte11s:
 			begin
+				keysend = subkey[87:80];
 				datasend = olddata[87:80];
 				smallenable = 1'b1;
 			end
@@ -286,6 +304,7 @@ module sybteswrap
 			end
 			byte12s:
 			begin
+				keysend = subkey[95:88];
 				datasend = olddata[95:88];
 				smallenable = 1'b1;
 			end
@@ -295,6 +314,7 @@ module sybteswrap
 			end
 			byte13s:
 			begin
+				keysend = subkey[103:96];
 				datasend = olddata[103:96];
 				smallenable = 1'b1;
 			end
@@ -304,6 +324,7 @@ module sybteswrap
 			end
 			byte14s:
 			begin
+				keysend = subkey[111:104];
 				datasend = olddata[111:104];
 				smallenable = 1'b1;
 			end
@@ -313,6 +334,7 @@ module sybteswrap
 			end
 			byte15s:
 			begin
+				keysend = subkey[119:112];
 				datasend = olddata[119:112];
 				smallenable = 1'b1;
 			end
@@ -322,6 +344,7 @@ module sybteswrap
 			end
 			byte16s:
 			begin
+				keysend = subkey[127:120];
 				datasend = olddata[127:120];
 				smallenable = 1'b1;
 			end
@@ -331,8 +354,8 @@ module sybteswrap
 			end
 			finito:
 			begin
-				sbytes_finished = 1'b1;
+				around_finished = 1'b1;
 			end
 		endcase
-	end
+	end		
 endmodule
