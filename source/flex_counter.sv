@@ -16,8 +16,8 @@ input wire n_rst,
 input wire count_enable,
 input wire [NUM_CNT_BITS-1:0] rollover_val,
 input wire sync,                                  //PUT BACK IN
-output wire rollover_flag
-//output wire [NUM_CNT_BITS-1:0] testStateCnt//DELETE
+output wire rollover_flag,
+output wire [NUM_CNT_BITS-1:0] testStateCnt//DELETE
 );
 
 //assign testStateCnt=currState;//DELETE
@@ -28,6 +28,7 @@ reg currOut;
 reg nextOut;
 
 
+assign testStateCnt=currState;//DELETE
 assign rollover_flag=currOut;
 
 always @ (posedge clk, negedge n_rst) begin
@@ -60,14 +61,19 @@ always @ (currState, count_enable, currOut, rollover_val, sync) begin
     end*/
     
   end else begin
-    nextState=currState;
-    nextOut=currOut;
+	if(sync) begin
+		nextState = 0;
+		nextOut = 0;
+	end else begin
+		nextState=currState;
+		nextOut=currOut;
+	end
   end
   
-  if(sync) begin
+  /*if(sync) begin
     nextState=0;
     nextOut=0;
-  end
+  end*/
 end
 
 
