@@ -30,15 +30,15 @@ aroundwrap DUT
   .n_rst(tb_n_rst),
   .around_enable(tb_around_enable),
   .around_finished(tb_around_finished),
-  .sramReadValue(tb_sramReadValue),
-  .sramWriteValue(tb_sramWriteValue),
-  .sramRead(tb_sramRead),
-  .sramWrite(tb_sramWrite),
-  .sramDump(tb_sramDump),
-  .sramInit(tb_sramInit),
-  .sramAddr(tb_sramAddr),
-  .sramDumpNum(tb_sramDumpNum),
-  .sramInitNum(tb_sramInitNum)
+  .sramread_data(tb_sramReadValue),
+  .sramwrite_data(tb_sramWriteValue),
+  .sramread(tb_sramRead),
+  .sramwrite(tb_sramWrite),
+  .sramdump(tb_sramDump),
+  .sraminit(tb_sramInit),
+  .sramaddr(tb_sramAddr),
+  .sramdumpnum(tb_sramDumpNum),
+  .sraminitnum(tb_sramInitNum)
 );
 
 testing_sram spamRAM
@@ -61,3 +61,35 @@ always begin
   #(CLKPERIOD/2);
 end
 
+initial begin
+  #(WAIT);
+  tb_realInitNum=2;
+  tb_realDumpNum=2;
+  tb_realDump=0;
+  tb_n_rst=0;
+  #(WAIT);
+  tb_realInit=1;
+  #(WAIT);
+  tb_realInit=0;
+  tb_n_rst=1;
+  #(WAIT*4);
+  tb_realDump=1;
+  #(WAIT);
+  tb_realDump=0;
+  #(WAIT);
+  #(WAIT/2);
+  
+  
+  tb_around_enable=1;
+  
+  @(posedge tb_sramWrite);//110ns
+  tb_expected=128'h08_48_F8_E9_2A_8D_C6_9A_2B_E2_F4_A0_BE_E3_3D_19; 
+  #(WAIT/2);
+  if(tb_expected==tb_sramWriteValue)
+    $display("round works!");
+  else
+    $error("round  no works!");
+end 
+
+endmodule   
+  
