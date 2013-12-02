@@ -17,7 +17,11 @@ module aroundwrap
 	output reg around_finished
 );
 
+<<<<<<< HEAD
 	typedef enum bit [7:0] {idle, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, finito} stateType;
+=======
+	typedef enum bit [7:0] {idle,readsramkey1, readsramkey2, readsramkey3, readsramdata1 , readsramdata2, readsramdata3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, writesram1, writesram2, finito};
+>>>>>>> de849f3953b9abf41f327bf21ff82fd9633c0f80
 	stateType state, nextstate;
 
 	reg [127:0] datahold;
@@ -25,6 +29,18 @@ module aroundwrap
 	reg [7:0] datain;
 	reg [7:0] keysend;
 	reg smallenable;
+<<<<<<< HEAD
+=======
+	reg sramread; 
+	reg sramwrite;
+	reg [15:0]sramddr; 
+	reg sramdump; 
+	reg [2:0]sramdumpnum; 
+	reg [2:0]sraminitnum; 
+	reg sraminit; 
+	reg [127:0]sramwrite_data; 
+	reg [127:0]sramread_data; 
+>>>>>>> de849f3953b9abf41f327bf21ff82fd9633c0f80
 
 	always@(posedge clk, negedge n_rst) begin
 		if(n_rst == 1'b0) begin
@@ -35,7 +51,11 @@ module aroundwrap
 		end
 	end
 
+<<<<<<< HEAD
 	addround DUT(.n_rst(n_rst), .around_enable(smallenable), .subkey(keysend), .olddata(datasend), .newdata(datain));
+=======
+	addround DUT(n_rst(n_rst), around_enable(smallenable), subkey(keysend), olddata(datasend), newdata(datain));
+>>>>>>> de849f3953b9abf41f327bf21ff82fd9633c0f80
 
 	always@(state) begin
 		nextstate = state;
@@ -43,9 +63,29 @@ module aroundwrap
 			idle:
 			begin
 				if(around_enable == 1'b1) begin
+<<<<<<< HEAD
 					nextstate = byte1s;
 				end
 			end
+=======
+					nextstate = readsramkey1;
+				end
+			end
+			readsramkey1:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 16;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  sramread_data = 0; 
+			   
+			  
+			  
+>>>>>>> de849f3953b9abf41f327bf21ff82fd9633c0f80
 			byte1s:
 			begin
 				nextstate = byte1c;
@@ -191,7 +231,10 @@ module aroundwrap
 				smallenable = 1'b0;
 				keysend = '0;
 				datasend = '0;
+<<<<<<< HEAD
 			end
+=======
+>>>>>>> de849f3953b9abf41f327bf21ff82fd9633c0f80
 			byte1s:
 			begin
 				keysend = subkey[7:0];

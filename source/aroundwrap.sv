@@ -17,7 +17,7 @@ module aroundwrap
 	output reg around_finished
 );
 
-	typedef enum bit [7:0] {idle, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, finito};
+	typedef enum bit [7:0] {idle,readsramkey1, readsramkey2, readsramkey3, readsramdata1 , readsramdata2, readsramdata3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, writesram1, writesram2, finito};
 	stateType state, nextstate;
 
 	reg [127:0] datahold;
@@ -25,6 +25,15 @@ module aroundwrap
 	reg [7:0] datain;
 	reg [7:0] keysend;
 	reg smallenable;
+	reg sramread; 
+	reg sramwrite;
+	reg [15:0]sramddr; 
+	reg sramdump; 
+	reg [2:0]sramdumpnum; 
+	reg [2:0]sraminitnum; 
+	reg sraminit; 
+	reg [127:0]sramwrite_data; 
+	reg [127:0]sramread_data; 
 
 	always@(posedge clk, negedge n_rst) begin
 		if(n_rst == 1'b0) begin
@@ -43,9 +52,40 @@ module aroundwrap
 			idle:
 			begin
 				if(around_enable == 1'b1) begin
-					nextstate = byte1s;
+					nextstate = readsramkey1;
 				end
 			end
+			
+			readsramkey1:
+			begin
+			  nextstate = readsramkey2;
+			end 
+			
+			readsramkey2:
+			begin 
+			  nextstate = readsramkey3;
+			end
+			
+			readsramkey3:
+			begin  
+			   nextstate = readsramdata1;
+			end 
+			
+			readsramdata1: 
+			begin
+			   nextstate = readsramdata2;
+			end 
+			
+			readsramdata2: 
+			begin
+			   nextstate = readsramdata3;
+			end 
+			
+			readsramdata3: 
+			begin
+			   nextstate = byte1s;
+			end 
+			
 			byte1s:
 			begin
 				nextstate = byte1c;
@@ -172,8 +212,16 @@ module aroundwrap
 			end
 			byte16c:
 			begin
-				nextstate = finito;
+				nextstate = writesram1;
 			end
+			writesram1:
+			begin
+			  nextstate = writesram2; 
+			end
+			writesram2: 
+			begin
+			  nextstate = finito;
+			end    
 			finito:
 			begin
 				nextstate = idle;
@@ -191,6 +239,89 @@ module aroundwrap
 				smallenable = 1'b0;
 				keysend = '0;
 				datasend = '0;
+				
+				readsramkey1:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 16;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0;  
+			  nextstate = readsramkey2;  
+			end
+			
+			readsramkey2:
+			begin
+			  sramread = 1;
+			  sramwrite = 0;
+			  sramaddr = 16;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0;  
+			  nextstate = readsramkey3;  
+			end
+			
+			readsramkey3:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  subkey = sramread_data;  
+			  nextstate = readsramdata1;  
+			end 
+			
+			readsramdata1:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 32;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  sramread_data = 0; 
+			  nextstate = readsramdata2;  
+			end
+			
+			readsramdata2:
+			begin
+			  sramread = 1;
+			  sramwrite = 0;
+			  sramaddr = 32;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  sramread_data = 0; 
+			  nextstate = readsramdata3;  
+			end
+			
+			readsramdata3:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  sramread_data = olddata; 
+			  nextstate = byte1c;  
+			end 
+			  
 			byte1s:
 			begin
 				keysend = subkey[7:0];

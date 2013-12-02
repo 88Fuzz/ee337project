@@ -10,8 +10,8 @@ module testing_sram
   input wire [127:0] write_data,
   output wire [127:0] read_data
 );
-reg tmp=0;
-reg [8:0]tmp2=511;
+//reg tmp=0;
+//reg [8:0]tmp2=511;
 
 //defparam sRAM.W_DATA_SIZE_WORDS=16;
 /*W_ADDR_SIZE_BITS  : natural := 16;    -- Address bus size in bits/pins with addresses corresponding to 
@@ -32,12 +32,12 @@ on_chip_sram_wrapper #(
               sRAM(
               .init_file_number(initNum),
               .dump_file_number(dumpNum),
-              .mem_clr(tmp),
-              .mem_init(in),
+              .mem_clr(0),
+              .mem_init(init),
               .mem_dump(dump),
-              .start_address(tmp),
-              .last_address(tmp2),
-              .verbose(tmp),
+              .start_address(0),
+              .last_address(511),
+              .verbose(0),
               .read_enable(read),
               .write_enable(write),
               .address(addr),
