@@ -125,6 +125,12 @@ module tb_controller ();
 		tb_mcol_finished = 1'b0;
 		tb_around_finished = 1'b1;
 
+		#40ns
+		tb_mcol_finished = 1'b1;
+		tb_srows_finished = 1'b1;
+		tb_sbytes_finished = 1'b1;
+		tb_keyexp_finished = 1'b1;
+
 		//#410ns
 		//tb_mRead = 1'b1;
 		//tb_mWrite = 1'b1;

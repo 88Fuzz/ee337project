@@ -8,14 +8,134 @@
 
 module mixcol
 (
+	input wire clk,
+	input wire n_rst,
 	input wire mixcol_enable,
-	input wire [127:0] olddata,
-	output reg [127:0] newdata,
-	output reg mixcol_finished
+	input wire [127:0] sramReadValue,
+	output reg [127:0] sramWriteValue,
+	output reg mixcol_finished,
+	output reg sramRead,
+	output reg sramWrite,
+	output reg sramDump,
+	output reg sramInit,
+	output reg [15:0] sramAddr,
+	output reg [2:0] sramDumpNum,
+	output reg [2:0] sramInitNum
 );
 
-	always@(olddata) begin
+	reg [127:0] olddata;
+	reg [127:0] newdata;
+	reg activate;
+	reg currfinish;
+	reg nextfinish;
 
+	typedef enum bit [3:0] {idle, setaddr, readsram1, readagain, mixer, writeaddr, writesram, finito, buff1, buff2} stateType;
+	stateType state, nextstate;
+
+	always@(posedge clk, negedge n_rst) begin
+		if(n_rst == 1'b0) begin
+			state <= idle;
+			currfinish <= 1'b0;
+		end else begin
+			state <= nextstate;
+			currfinish <= nextfinish;
+		end
+	end
+
+	assign olddata = sramReadValue;
+	assign sramWriteValue = newdata;
+	assign mixcol_finished = currfinish;
+
+	always@(state, mixcol_enable) begin
+		nextstate = state;
+		case(state)
+			idle: begin
+				if(mixcol_enable) begin
+					nextstate = setaddr;
+				end else begin
+					nextstate = idle;
+				end
+			end
+			setaddr: begin
+				nextstate = readsram1;
+			end
+			readsram1: begin
+				nextstate = readagain;
+			end
+			readagain: begin
+				nextstate = mixer;
+			end
+			mixer: begin
+				nextstate = writeaddr;
+			end
+			writeaddr: begin
+				nextstate = writesram;
+			end
+			writesram: begin
+				nextstate = finito;
+			end
+			finito: begin
+				nextstate = buff1;
+			end
+			buff1: begin
+				nextstate = buff2;
+			end
+			buff2: begin
+				nextstate = idle;
+			end
+			default: begin
+				nextstate = state;
+			end
+		endcase
+	end
+
+	always@(state) begin
+		//sramWriteValue = 1'b0;
+		sramRead = 1'b0;
+		sramWrite = 1'b0;
+		sramDump = 1'b0;
+		sramInit = 1'b0;
+		sramAddr = '0;
+		sramDumpNum = '0;
+		sramInitNum = '0;
+		nextfinish = 1'b0;
+		activate = 1'b0;
+		case(state)
+			idle: begin
+			end
+			setaddr: begin
+				sramAddr = 32;
+			end
+			readsram1: begin
+				sramAddr = 32;
+				sramRead = 1'b1;
+			end
+			readagain: begin
+			end
+			mixer: begin
+				activate = 1'b1;
+			end
+			writeaddr: begin
+				sramAddr = 32;
+			end
+			writesram: begin
+				sramAddr = 32;
+				sramWrite = 1'b1;
+			end
+			finito: begin
+				nextfinish = 1'b1;
+			end
+			buff1: begin
+			end
+			buff2: begin
+			end
+			default: begin
+			end
+		endcase
+	end
+
+	always@(olddata, activate) begin
+		if(activate) begin
 		if(olddata[127] && olddata[95]) begin //most significant byte
 			newdata[127:120] = ((olddata[127:120]<<1)^8'b00011011) ^ (((olddata[95:88]<<1)^8'b00011011)^olddata[95:88]) ^ olddata[63:56] ^ olddata[31:24];
 		end else if(olddata[127]) begin
@@ -175,8 +295,6 @@ module mixcol
 		end else begin
 			newdata[7:0] = (((olddata[103:96]<<1))^olddata[103:96]) ^ olddata[71:64] ^ olddata[39:32] ^ ((olddata[7:0]<<1));
 		end
-
-		mixcol_finished = 1'b1;
+		end
 	end
-
 endmodule
