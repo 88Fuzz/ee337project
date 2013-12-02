@@ -10,18 +10,12 @@ module AES
 (
 	input wire clk,
 	input wire n_rst,
-	input wire [31:0] HADDR,
-	input wire [2:0] HBURST,
-	input wire HMASTLOCK,
-	input wire [3:0] HPROT,
-	input wire [2:0] HSIZE,
-	input wire [1:0] HTRANS,
-	input wire [127:0] HWDATA,
-	input wire HWRITE,
 	input wire HSELx,
-	input wire HREADY,
-	output reg HRESP,
-	output reg [127:0] HRDATA,
+	input wire mWrite,
+	input wire mRead,
+	input wire [127:0] origkey,
+	input wire [127:0] olddata,
+	output reg [127:0] newdata,
 	output reg HREADYOUT
 );
 
