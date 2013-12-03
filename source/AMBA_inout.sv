@@ -11,7 +11,7 @@ module AMBA_inout
   input wire [127:0] HWDATA,
   output reg [127:0] HRDATA,
   output reg [127:0] write_data,
-  output reg HREADYOUT,
+  output wire HREADYOUT,
   output reg HRESP,
   output reg read,
   output reg write,
@@ -45,187 +45,129 @@ testing_sram SexyRandomAccessMemory
   .read_data(read_data)
 );
 
+reg currHREADYOUT;
+reg nextHREADYOUT;
 
+assign HREADYOUT=currHREADYOUT;
 
-typedef enum bit[3:0] {IDLE,WRITEKSETUP, WRITEK, WRITEDSETUP, WRITED, READDSETUP, READD, DISPLAYD, HREADY, ERROR} stateType;
+//                      0            1      2       3             4
+typedef enum bit[3:0] {WRITEKSETUP, IDLE, WRITEK, WRITEDSETUP, WRITED,
+//                        5           6     7         8       9      10     11
+                       READDSETUP, READD, DISPLAYD, HREADY, ERROR, IDLE2, IDLE3,
+                       //12    13     14      15
+                       WHAT1, WHAT2, WHAT3, WHAT4} stateType;
 stateType currState, nextState;
 
 always @(posedge clk, negedge n_rst) begin
   if(n_rst==0) begin
     currState<=IDLE;
+    currHREADYOUT<=1;
   end else begin
     currState<=nextState;
+    currHREADYOUT<=nextHREADYOUT;
   end
 end
 
-always @ (currState) begin
+always @ (currState, currHREADYOUT, HWDATA, read_data) begin
+  read=0;
+  write=0;
+  addr=0;
+  dumpNum=0;
+  initNum=0;
+  dump=0;
+  init=0;
+  HRDATA=0;
+  HRESP=0;
+  nextHREADYOUT=currHREADYOUT;
+  write_data=0;
   case(currState)
     IDLE: begin
-      read=0;
-      write=0;
-      addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
-      write_data=0;
+      nextHREADYOUT=1;
     end
     WRITEKSETUP: begin
-      read=0;
-      write=0;
       addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
       write_data=HWDATA;
     end
     WRITEK: begin
-      read=0;
-      write=1;
       addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
+      write=1;
+      nextHREADYOUT=0;
       write_data=HWDATA;
     end
     WRITEDSETUP: begin
-      read=0;
-      write=0;
       addr=32;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
       write_data=HWDATA;
     end
     WRITED: begin
-      read=0;
       write=1;
       addr=32;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
       write_data=HWDATA;
     end
     READDSETUP: begin
-      read=0;
-      write=0;
       addr=32;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
-      write_data=0;
     end
     READD: begin//probably have to wait until the AMBA clock goes high/low
       read=1;
-      write=0;
       addr=32;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
-      write_data=0;
     end
     DISPLAYD: begin
-      read=0;
-      write=0;
-      addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
       HRDATA=read_data;
-      HREADYOUT=0;
-      HRESP=0;
-      write_data=0;
     end
     ERROR: begin
-      read=0;
-      write=0;
-      addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
       HRESP=1;
-      write_data=0;
     end
     HREADY: begin
-      read=0;
-      write=0;
-      addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=1;
-      HRESP=0;
-      write_data=0;
+      nextHREADYOUT=0;
+    end
+    IDLE2: begin
+    end
+    IDLE3: begin
+    end
+    WHAT1: begin
+    end
+    WHAT2: begin
+    end
+    WHAT3: begin
+    end
+    WHAT4: begin
     end
     default: begin
-      read=0;
-      write=0;
-      addr=0;
-      dumpNum=0;
-      initNum=0;
-      dump=0;
-      init=0;
-      HRDATA=0;
-      HREADYOUT=0;
-      HRESP=0;
-      write_data=0;
+      nextHREADYOUT=1;
     end
   endcase
 end
 
-always @(currState, writek_enable, writek_enable, readd_enable, hresp_error, hready_enable) begin
+always @(currState, writek_enable, writed_enable, readd_enable, hresp_error, hready_enable) begin
+  nextState=currState;
   case(currState)
     IDLE: begin
-      if(writek_enable)
+      nextState=IDLE;
+      if(writek_enable) begin
         nextState=WRITEKSETUP;
-      else if(writed_enable)
+      end else
+      if(writed_enable) begin
         nextState=WRITEDSETUP;
-      else if(readd_enable)
+      end else
+      if(readd_enable) begin
         nextState=READDSETUP;
-      else if(hresp_error)
+      end else
+      if(hresp_error) begin
         nextState=ERROR;
-      else if(hready_enable)
+      end else
+      if(hready_enable) begin
         nextState=HREADY;
-      else
-        nextState=IDLE;
+      end
     end
     WRITEKSETUP: begin
       nextState=WRITEK;
     end
     WRITEK: begin
+      nextState=IDLE2;
+    end
+    IDLE2: begin
+      nextState=IDLE3;
+    end
+    IDLE3: begin
       nextState=IDLE;
     end
     WRITEDSETUP: begin
@@ -246,10 +188,26 @@ always @(currState, writek_enable, writek_enable, readd_enable, hresp_error, hre
     ERROR: begin
       if(!hresp_error)
         nextState=IDLE;
+      else
+        nextState=ERROR;
     end
     HREADY: begin
       if(!hready_enable)
         nextState=IDLE;
+      else
+        nextState=HREADY;
+    end
+    WHAT1: begin
+      nextState=IDLE;
+    end
+    WHAT2: begin
+      nextState=IDLE;
+    end
+    WHAT3: begin
+      nextState=IDLE;
+    end
+    WHAT4: begin
+      nextState=IDLE;
     end
     default: begin
       nextState=IDLE;

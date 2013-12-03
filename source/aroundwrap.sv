@@ -243,6 +243,9 @@ module aroundwrap
 	always@(state, around_enable, sramread_data) begin
 		smallenable = 1'b1;
 		around_finished = 1'b0;
+		nextsubkey = currsubkey; 
+	  nextolddata = currolddata;
+	  nextNewData = currNewData ;
 		case(state)
 			idle:
 			begin
