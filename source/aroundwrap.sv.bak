@@ -68,10 +68,11 @@ module aroundwrap
 		case(state)
 			idle:
 			begin
-			  $display("penis");
 				if(around_enable == 1'b1) begin
 					nextstate = readsramkey1;
 				end
+				else 
+				  nextstate = state; 
 			end	
 			readsramkey1:
 			begin 

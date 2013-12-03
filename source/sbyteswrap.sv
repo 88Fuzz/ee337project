@@ -6,42 +6,77 @@
 // Version:     1.0  Initial Design Entry
 // Description: Wrapper for sbytes
 
-module sybteswrap
+module sbyteswrap
 (
 	input wire clk,
 	input wire n_rst,
 	input wire sbytes_enable,
-	input wire [127:0] olddata,
-	output reg [127:0] newdata,
-	output reg sbytes_finished
+	//input wire [127:0] olddata,
+	//output reg [127:0] newdata,
+	output reg sbytes_finished,
+	
+	output reg sramwrite,
+	output reg sramread,
+	output reg [15:0]sramaddr, 
+	output reg sramdump, 
+	output reg [2:0]sramdumpnum, 
+	output reg [2:0]sraminitnum, 
+	output reg sraminit, 
+	output reg [127:0]sramwrite_data, 
+	input wire [127:0]sramread_data 
 );
 
-	typedef enum bit [7:0] {idle, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, finito} stateType;
+	typedef enum bit [5:0] {idle,readsram1,readsram2,readsram3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, writesram1, writesram2, finito} stateType;
   stateType state, nextstate;
 
 	reg [7:0] datasend;
 	reg [7:0] datain;
 	reg smallenable;
+	
+	reg [127:0] currolddata;
+	reg [127:0] nextolddata; 
+	
+	reg [127:0] currnewdata;
+	reg [127:0] nextnewdata; 
+	
 
 	always@(posedge clk, negedge n_rst) begin
 		if(n_rst == 1'b0) begin
-			state = idle;
+			state <= idle;
+			currnewdata <= 0; 
+			currolddata <= 0; 
 		end else begin
-			state = nextstate;
+			state <= nextstate;
+			currnewdata <= nextnewdata; 
+			currolddata <= nextolddata; 
 		end
 	end
 
 	sbytes DUT (.olddata(datasend), .newdata(datain));
 
-	always@(state) begin
+	always@(state, sbytes_enable) begin
 		nextstate = state;
 		case(state)
 			idle:
 			begin
 				if(sbytes_enable) begin
-					nextstate = byte1s;
+					nextstate = readsram1;
+				end else begin
+				  nextstate = state;
 				end
 			end
+			readsram1:
+			begin
+			  nextstate = readsram2;
+			end
+			readsram2:
+			begin
+			  nextstate = readsram3;
+			end 
+			readsram3:
+			begin
+			  nextstate = byte1s; 
+			end    
 			byte1s:
 			begin
 				nextstate = byte1c;
@@ -168,171 +203,671 @@ module sybteswrap
 			end
 			byte16c:
 			begin
-				nextstate = finito;
+				nextstate = writesram1;
 			end
+			writesram1:
+			begin
+			  nextstate = writesram2; 
+			end 
+			writesram2:
+			begin
+			  nextstate = finito; 
+			end 
 			finito:
 			begin
 				nextstate = idle;
 			end
+			default:
+			begin
+			  nextstate = idle;
+			end
 		endcase
 	end
 
-	always@(state) begin
+	always@(state, sbytes_enable, sramread_data, currolddata, currnewdata, datain) begin
 		smallenable = 1'b0;
 		sbytes_finished = 1'b0;
 		case(state)
 			idle:
 			begin
-				datasend = '0;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
+			readsram1:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 32;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
+			end
+			readsram2: 
+			begin
+			  sramread = 1;
+			  sramwrite = 0;
+			  sramaddr = 32;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
+			end
+			readsram3: 
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = sramread_data; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
+			end 
 			byte1s:
 			begin
-				datasend = olddata[7:0];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[7:0];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte1c:
 			begin
-				newdata[7:0] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[7:0];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:8],datain};
+				sbytes_finished = 0;
 			end
 			byte2s:
 			begin
-				datasend = olddata[15:8];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[15:8];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte2c:
 			begin
-				newdata[15:8] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[15:8];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:16],datain,currnewdata[7:0]};
+				sbytes_finished = 0;
 			end
 			byte3s:
 			begin
-				datasend = olddata[23:16];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[23:16];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte3c:
 			begin
-				newdata[23:16] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[23:16];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:24],datain,currnewdata[15:0]};
+				sbytes_finished = 0;
 			end
 			byte4s:
 			begin
-				datasend = olddata[31:24];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[31:24];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte4c:
 			begin
-				newdata[31:24] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[31:24];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:32],datain,currnewdata[23:0]};
+				sbytes_finished = 0;
 			end
 			byte5s:
 			begin
-				datasend = olddata[39:32];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[39:32];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte5c:
 			begin
-				newdata[39:32] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[39:32];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:40],datain,currnewdata[31:0]};
+				sbytes_finished = 0;
 			end
 			byte6s:
 			begin
-				datasend = olddata[47:40];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[47:40];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte6c:
 			begin
-				newdata[47:40] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[47:40];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:48],datain,currnewdata[39:0]};
+				sbytes_finished = 0;
 			end
 			byte7s:
 			begin
-				datasend = olddata[55:48];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[55:48];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte7c:
 			begin
-				newdata[55:48] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[55:48];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:56],datain,currnewdata[47:0]};
+				sbytes_finished = 0;
 			end
 			byte8s:
 			begin
-				datasend = olddata[63:56];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[63:56];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte8c:
 			begin
-				newdata[63:56] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[63:56];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:64],datain,currnewdata[55:0]};
+				sbytes_finished = 0;
 			end
 			byte9s:
 			begin
-				datasend = olddata[71:64];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[71:64];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte9c:
 			begin
-				newdata[71:64] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[71:64];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:72],datain,currnewdata[63:0]};
+				sbytes_finished = 0;
 			end
 			byte10s:
 			begin
-				datasend = olddata[79:72];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[79:72];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte10c:
 			begin
-				newdata[79:72] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[79:72];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:80],datain,currnewdata[71:0]};
+				sbytes_finished = 0;
 			end
 			byte11s:
 			begin
-				datasend = olddata[87:80];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[87:80];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte11c:
 			begin
-				newdata[87:80] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[87:80];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:88],datain,currnewdata[79:0]};
+				sbytes_finished = 0;
 			end
 			byte12s:
 			begin
-				datasend = olddata[95:88];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[95:88];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte12c:
 			begin
-				newdata[95:88] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[95:88];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:96],datain,currnewdata[87:0]};
+				sbytes_finished = 0;
 			end
 			byte13s:
 			begin
-				datasend = olddata[103:96];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[103:96];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte13c:
 			begin
-				newdata[103:96] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[103:96];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:104],datain,currnewdata[95:0]};
+				sbytes_finished = 0;
 			end
 			byte14s:
 			begin
-				datasend = olddata[111:104];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[111:104];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte14c:
 			begin
-				newdata[111:104] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[111:104];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:112],datain,currnewdata[103:0]};
+				sbytes_finished = 0;
 			end
 			byte15s:
 			begin
-				datasend = olddata[119:112];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[119:112];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte15c:
 			begin
-				newdata[119:112] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[119:112];
+				smallenable = 1'b1;
+				nextnewdata = {currnewdata[127:120],datain,currnewdata[111:0]};
+				sbytes_finished = 0;
 			end
 			byte16s:
 			begin
-				datasend = olddata[127:120];
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				datasend = currolddata[127:120];
 				smallenable = 1'b1;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 0;
 			end
 			byte16c:
 			begin
-				newdata[127:120] = datain;
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+			  datasend = currolddata[127:120];
+				smallenable = 1'b1;
+				nextnewdata = {datain,currnewdata[119:0]};
+				sbytes_finished = 0;
+			end
+			writesram1:
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 32;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 1'b0;
+			end
+			writesram2:
+			begin
+			  sramread = 0;
+			  sramwrite = 1;
+			  sramaddr = 32;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = currnewdata; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 1'b0;
 			end
 			finito:
 			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
 				sbytes_finished = 1'b1;
 			end
+			default:
+			begin
+			sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = currnewdata; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				datasend = 0;
+				nextnewdata = currnewdata ;
+				sbytes_finished = 1'b0; 
+			end 
 		endcase
 	end
 endmodule

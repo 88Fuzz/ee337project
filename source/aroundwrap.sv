@@ -71,6 +71,8 @@ module aroundwrap
 				if(around_enable == 1'b1) begin
 					nextstate = readsramkey1;
 				end
+				else 
+				  nextstate = state; 
 			end	
 			readsramkey1:
 			begin 
@@ -236,11 +238,15 @@ module aroundwrap
 			begin
 				nextstate = idle;
 			end
+			default:
+			begin
+			  nextstate = idle;
+			end 
 		endcase
 	end
 
 
-	always@(state, around_enable, sramread_data) begin
+	always@(state, around_enable, sramread_data, currsubkey, currolddata, currNewData, datain) begin
 		smallenable = 1'b1;
 		around_finished = 1'b0;
 		case(state)
@@ -953,8 +959,40 @@ module aroundwrap
 			  
 			finito:
 			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0;
+			  nextsubkey = currsubkey; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				keysend = 0;
+				datasend = 0;
+				nextNewData = currNewData ;
 				around_finished = 1'b1;
 			end
+			
+			default: 
+			begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0;
+			  nextsubkey = currsubkey; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				keysend = 0;
+				datasend = 0;
+				nextNewData = currNewData ;
+			end 
 		endcase
 	end		
 endmodule

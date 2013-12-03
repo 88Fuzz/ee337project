@@ -64,7 +64,7 @@ end
 initial begin
   #(WAIT);
   tb_realInitNum=2;
-  tb_realDumpNum=2;
+  tb_realDumpNum=0;
   tb_realDump=0;
   tb_n_rst=0;
   #(WAIT);
@@ -73,7 +73,7 @@ initial begin
   tb_realInit=0;
   tb_n_rst=1;
   #(WAIT*4);
-  tb_realDump=1;
+  tb_realDump=0;
   #(WAIT);
   tb_realDump=0;
   #(WAIT);

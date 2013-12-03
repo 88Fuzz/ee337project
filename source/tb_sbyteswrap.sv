@@ -1,14 +1,14 @@
 `timescale 1ns / 100ps
 
-module tb_aroundwrap();
+module tb_sbyteswrap();
 
 localparam CLKPERIOD=10;
 localparam WAIT=5;
 
 reg tb_clk;
 reg tb_n_rst;
-reg tb_around_enable; 
-reg tb_around_finished; 
+reg tb_sbytes_enable; 
+reg tb_sbytes_finished; 
 reg [127:0] tb_sramReadValue;
 reg [127:0] tb_sramWriteValue;
 reg tb_sramRead;
@@ -24,12 +24,12 @@ reg [2:0] tb_realDumpNum;
 reg [2:0] tb_realInitNum;
 reg [127:0]tb_expected;
 
-aroundwrap DUT
+sbyteswrap DUT1
 (
   .clk(tb_clk),
   .n_rst(tb_n_rst),
-  .around_enable(tb_around_enable),
-  .around_finished(tb_around_finished),
+  .sbytes_enable(tb_sbytes_enable),
+  .sbytes_finished(tb_sbytes_finished),
   .sramread_data(tb_sramReadValue),
   .sramwrite_data(tb_sramWriteValue),
   .sramread(tb_sramRead),
@@ -41,7 +41,7 @@ aroundwrap DUT
   .sraminitnum(tb_sramInitNum)
 );
 
-testing_sram spamRAM
+testing_sram spamRAM1
 (
   .read(tb_sramRead),
   .write(tb_sramWrite),
@@ -63,8 +63,8 @@ end
 
 initial begin
   #(WAIT);
-  tb_realInitNum=2;
-  tb_realDumpNum=2;
+  tb_realInitNum=1;
+  tb_realDumpNum=0;
   tb_realDump=0;
   tb_n_rst=0;
   #(WAIT);
@@ -80,10 +80,10 @@ initial begin
   #(WAIT/2);
   
   
-  tb_around_enable=1;
+  tb_sbytes_enable=1;
   
   @(posedge tb_sramWrite);//110ns
-  tb_expected=128'h08_48_F8_E9_2A_8D_C6_9A_2B_E2_F4_A0_BE_E3_3D_19; 
+  tb_expected=128'h30_52_41_1E_E5_5D_B4_B8_F1_98_BF_E0_AE_11_27_D4; 
   #(WAIT/2);
   if(tb_expected==tb_sramWriteValue)
     $display("round works!");
@@ -91,5 +91,4 @@ initial begin
     $error("round  no works!");
 end 
 
-endmodule   
-  
+endmodule
