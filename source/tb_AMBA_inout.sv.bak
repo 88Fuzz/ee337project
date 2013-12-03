@@ -81,7 +81,12 @@ initial begin
   tb_realDump=0;
   tb_realDumpNum=0;
   tb_realInitNum=0;
-  
+  tb_writek_enable=0;
+  tb_writed_enable=0;
+  readd_enable=0;
+  hresp_error=0;
+  hready_enable=0;
+  #(WAIT);
   tb_n_rst=0;
   #(WAIT*3);
   
@@ -89,6 +94,8 @@ initial begin
   #(WAIT/2);
   #(CLKPERIOD);
   
+  
+  #(WAIT/4);
   tb_hresp_error=1;
   #(CLKPERIOD);
   
@@ -113,20 +120,20 @@ initial begin
   #(CLKPERIOD);
   #(CLKPERIOD);
   
-  if(tb_HREADYOUT)
-    $display("HRADYOUT is asserted correctly");
+  if(tb_HREADYOUT==0)
+    $display("HRADYOUT is un-asserted correctly");
   else
-    $error("HRADYOUT is not asserted correctly");
+    $error("HRADYOUT is not un-asserted correctly");
   
   tb_hready_enable=0;
   
   #(CLKPERIOD);
-  #(WAIT);
+  #(WAIT*2);
   
-  if(!tb_HREADYOUT)
-    $display("HRADYOUT is un-asserted correctly");
+  if(tb_HREADYOUT)
+    $display("HRADYOUT is asserted correctly");
   else
-    $error("HRADYOUT is not un-asserted correctly");
+    $error("HRADYOUT is not asserted correctly");
     
   tb_HWDATA=128'h09_CF_4F_3C__AB_F7_15_88__28_AE_D2_A6__2B_7E_15_16;
   
@@ -168,7 +175,8 @@ initial begin
   else
     $error("data is looking in SRAM at incorrect address");
   
-  #(CLKPERIOD);  
+  #(CLKPERIOD);
+  #(WAIT);
   
   if(tb_HRDATA==tb_HWDATA)
     $display("module outputs the correct value");
