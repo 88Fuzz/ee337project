@@ -100,36 +100,45 @@ module tb_controller ();
 
 		#20ns
 		tb_keyexp_finished = 1'b1;
+		#10ns
+		tb_keyexp_finished = 1'b0;
 
 		#20ns
 		tb_around_finished = 1'b1;
-		tb_keyexp_finished = 1'b0;
+		#10ns
+		tb_around_finished = 1'b0;
 
 		#60ns
 		tb_keyexp_finished = 1'b1;
-		tb_around_finished = 1'b0;
+		#10ns
+		tb_keyexp_finished = 1'b0;
 
 		#80ns
-		tb_keyexp_finished = 1'b0;
 		tb_sbytes_finished = 1'b1;
+		#10ns
+		tb_sbytes_finished = 1'b0;
 
 		#40ns
-		tb_sbytes_finished = 1'b0;
 		tb_srows_finished = 1'b1;
+		#10ns
+		tb_srows_finished = 1'b0;
 
 		#70ns//210
 		tb_mcol_finished = 1'b1;
-		tb_srows_finished = 1'b0;
+		#10ns
+		tb_mcol_finished = 1'b0;
 
 		#50ns
-		tb_mcol_finished = 1'b0;
 		tb_around_finished = 1'b1;
+		#10ns
+		tb_around_finished = 1'b0;
 
 		#40ns
 		tb_mcol_finished = 1'b1;
 		tb_srows_finished = 1'b1;
 		tb_sbytes_finished = 1'b1;
 		tb_keyexp_finished = 1'b1;
+		tb_around_finished = 1'b1;
 
 		//#410ns
 		//tb_mRead = 1'b1;
