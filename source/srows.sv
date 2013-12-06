@@ -30,14 +30,14 @@ module srows
 	reg currfinish;
 	reg nextfinish;
 
-	typedef enum bit [3:0] {idle, setaddr, readsram1, readagain, shifter, writeaddr, writesram, finito, buff1, buff2} stateType;
+	typedef enum bit [3:0] {setaddr, idle, readsram1, readagain, shifter, writeaddr, writesram, finito, buff1, buff2} stateType;
 	stateType state, nextstate;
 
 	always@(posedge clk, negedge n_rst) begin
 		if(n_rst == 1'b0) begin
 			state <= idle;
-			currfinish <= 1'b0;
-			currdata <= '0;
+			currfinish <= 0;
+			currdata <= 0;
 		end else begin
 			state <= nextstate;
 			currfinish <= nextfinish;
@@ -94,13 +94,13 @@ module srows
 
 	always@(state) begin
 		//sramWriteValue = 1'b0;
-		sramRead = 1'b0;
-		sramWrite = 1'b0;
-		sramDump = 1'b0;
-		sramInit = 1'b0;
-		sramAddr = '0;
-		sramDumpNum = '0;
-		sramInitNum = '0;
+		sramRead = 0;
+		sramWrite = 0;
+		sramDump = 0;
+		sramInit = 0;
+		sramAddr = 0;
+		sramDumpNum = 0;
+		sramInitNum = 0;
 		nextfinish = 1'b0;
 		activate = 1'b0;
 		case(state)

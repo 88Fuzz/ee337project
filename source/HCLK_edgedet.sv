@@ -11,8 +11,9 @@ reg past;
 reg curr;
 reg future;
 
-assign HCLK_rise=curr & (curr & ~past);
-assign HCLK_fall=~curr & (curr & ~past);
+
+assign HCLK_rise=(~past) & curr;//curr & (curr & ~past);
+assign HCLK_fall=past & (~curr);//~curr & (curr & ~past);
 
 always @(posedge clk, negedge n_rst) begin
   if(n_rst==0) begin

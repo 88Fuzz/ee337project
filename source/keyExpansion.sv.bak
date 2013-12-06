@@ -86,7 +86,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     /*INITSRAM: begin
       tmp=0;
@@ -112,7 +112,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     READSRAM1AGAIN: begin
       sramWriteValue=0;
@@ -126,7 +126,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=sramReadValue;
-      //gEnter=0;
+      gEnter=0;
     end
     READSRAMELSEADDR: begin
       sramWriteValue=0;
@@ -140,7 +140,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     READSRAMELSE: begin
       sramWriteValue=0;
@@ -154,7 +154,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     PREPG: begin
       sramWriteValue=0;
@@ -183,7 +183,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       //gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     G: begin
       sramWriteValue=0;
@@ -212,7 +212,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
 //      newKey[31:0]=oldKey[31:0]^gReturn;
       nextNewKey={sramReadValue[127:32],sramReadValue[31:0]^gReturn};//////////////////////////////////
       g_enable=0;
-      //gEnter=0;
+      gEnter=0;
     end
     XOR2: begin
       sramWriteValue=0;
@@ -227,7 +227,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       //newKey[63:32]=oldKey[63:32]^newKey[31:0];
       nextNewKey={sramReadValue[127:64],sramReadValue[63:32]^currNewKey[31:0],currNewKey[31:0]};
       g_enable=0;
-      //gEnter=0;
+      gEnter=0;
     end
     XOR3: begin
       sramWriteValue=0;
@@ -242,7 +242,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
 //      newKey[95:64]=oldKey[95:64]^newKey[63:32];
       nextNewKey={sramReadValue[127:96],sramReadValue[95:64]^currNewKey[63:32],currNewKey[63:0]};
       g_enable=0;
-      //gEnter=0;
+      gEnter=0;
     end
     XOR4: begin
       sramWriteValue=0;
@@ -257,7 +257,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       //newKey[127:96]=oldKey[127:96]^newKey[95:64];
       nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[95:0]};
       g_enable=0;
-      //gEnter=0;
+      gEnter=0;
     end
     PREPSRAM: begin
       sramWriteValue=currNewKey;
@@ -272,7 +272,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       //newKey=oldKey;
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     WRITESRAM: begin
       sramWriteValue=currNewKey;
@@ -286,7 +286,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     /*DUMPSRAM: begin
       tmp=0;
@@ -312,7 +312,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=1;//probably need a new state for this after everything has been stored in sram
       g_enable=0;
       nextNewKey=currNewKey;
-      //gEnter=0;
+      gEnter=0;
     end
     default: begin//same as IDLE
       sramWriteValue=0;
@@ -326,7 +326,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=0;
       nextNewKey=0;
-      //gEnter=0;
+      gEnter=0;
     end
   endcase
 end

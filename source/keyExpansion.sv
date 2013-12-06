@@ -56,8 +56,8 @@ G gggg(
               );*/
                       //0        1              2           3                  4    5    6   7       8     9
 typedef enum bit[4:0] {IDLE, READSRAM1, READSRAMELSEADDR, READSRAMELSE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4,
-  //                      10    11         12     13           14
-                         DONE, PREPG, WRITESRAM, PREPSRAM, READSRAM1AGAIN} stateType;//will need states for loading and unloading SRAM
+  //                      10    11         12     13           14           15     16
+                         DONE, PREPG, WRITESRAM, PREPSRAM, READSRAM1AGAIN, BUFF1, BUFF2} stateType;//will need states for loading and unloading SRAM
 stateType currState, nextState;
 
 

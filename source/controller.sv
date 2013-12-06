@@ -7,7 +7,6 @@ module controller
 	input wire mWrite,
 	input wire dataReady,
 	input wire mRead,
-	//input wire finished,
 	input wire keyexp_finished,
 	input wire sbytes_finished,
 	input wire srows_finished,

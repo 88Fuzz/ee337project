@@ -156,6 +156,7 @@ initial begin
   tb_writed_enable=1;
   @(posedge tb_sramWrite);
   tb_writed_enable=0;
+  #(WAIT/2);
   if(tb_sramAddr==32)
     $display("data write address correct");
   else
@@ -170,6 +171,7 @@ initial begin
   tb_readd_enable=1;
   @(posedge tb_sramRead);
   tb_readd_enable=0;
+  #(WAIT/2);
   if(tb_sramAddr==32)
     $display("data is looking in SRAM at correct address");
   else

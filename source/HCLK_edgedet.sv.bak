@@ -7,6 +7,10 @@ module HCLK_edgedet
   output wire HCLK_fall
 );
 
+reg past;
+reg curr;
+reg future;
+
 assign HCLK_rise=curr & (curr & ~past);
 assign HCLK_fall=~curr & (curr & ~past);
 

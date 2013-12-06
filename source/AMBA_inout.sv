@@ -1,5 +1,7 @@
 module AMBA_inout
 (
+  input wire HCLK,
+  input wire HNRST,
   input wire clk,
   input wire n_rst,
   input wire writek_enable,//master writing key
@@ -7,6 +9,8 @@ module AMBA_inout
   input wire readd_enable,//master reading data
   input wire hresp_error,
   input wire hready_enable,
+  input wire HCLK_fall,
+  input wire HCLK_rise,
   input wire [127:0] read_data,
   input wire [127:0] HWDATA,
   output reg [127:0] HRDATA,
@@ -137,7 +141,7 @@ always @ (currState, currHREADYOUT, HWDATA, read_data) begin
   endcase
 end
 
-always @(currState, writek_enable, writed_enable, readd_enable, hresp_error, hready_enable) begin
+always @(currState, writek_enable, writed_enable, readd_enable, hresp_error, hready_enable, HCLK_fall, HCLK_rise) begin
   nextState=currState;
   case(currState)
     IDLE: begin
@@ -186,8 +190,10 @@ always @(currState, writek_enable, writed_enable, readd_enable, hresp_error, hre
       nextState=IDLE;
     end
     ERROR: begin
-      if(!hresp_error)
+      if(HCLK_fall)//!hresp_error)
         nextState=IDLE;
+      /*else if(HCLK_rise)
+        nextState=IDLE;*/
       else
         nextState=ERROR;
     end

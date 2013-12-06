@@ -8,14 +8,24 @@
 
 module AES
 (
+  input wire HCLK,
+  input wire HNRST,
 	input wire clk,
 	input wire n_rst,
+	input wire [31:0] HADDR,
+	input wire [2:0] HBURST,
+	input wire HMASTLOCK,
+	input wire [3:0] HPORT,
+	input wire [2:0] HSIZE,
+	input wire [1:0] HTRANS,
+	input wire [127:0] HWDATA,
+	input wire HWRITE,
 	input wire HSELx,
-	input wire mWrite,
-	input wire mRead,
-	input wire [127:0] origkey,
-	input wire [127:0] olddata,
-	output reg [127:0] newdata,
+	input wire HREADY,
+	input wire sramBigDumpNum,
+	input wire sramBigDump,
+	output reg HRESP,
+	output reg [127:0] HRDATA,
 	output reg HREADYOUT
 );
 
@@ -31,11 +41,13 @@ wire sramBigWriteEnable;
 wire [127:0]sramBigWriteValue;
 wire [127:0]sramBigReadValue;
 wire [15:0]sramBigAddr;
-wire sramBigDump;
-wire [2:0]sramBigDumpNum;
+//wire sramBigDump;//////////////////////////////////////////////////////////////
+//wire [2:0]sramBigDumpNum;
 wire [2:0]sramBigInitNum;
 wire sramBigInit;
 
+//assign sramBigDumpNum=0;////////////////
+//assign sramBigInitNum=0;
 
 //keyexpansion sram signals
 wire [127:0]sramWriteValue_keyexp;
@@ -47,46 +59,61 @@ wire [15:0]sramAddr_keyexp;
 wire [2:0]sramDumpNum_keyexp;
 wire [2:0]sramInitNum_keyexp;
 
+assign sramDumpNum_keyexp=0;
+assign sramInitNum_keyexp=0;
+
 
 //aroundwrap sram signals		
-wire [127:0]sramWrite_around;
+wire sramWrite_around;
 wire sramRead_around;
 wire [15:0]sramAddr_around;
 wire sramDump_around;
 wire [2:0]sramDumpNum_around;
 wire [2:0]sramInitNum_around;
 wire sramInit_around;
-wire sramWriteValue_around;
+wire [127:0]sramWriteValue_around;
+
+assign sramDumpNum_around=0;
+assign sramInitNum_around=0;
 
 //sbyteswrap sram signals
-wire [127:0]sramWrite_sbytes;
+wire sramWrite_sbytes;
 wire sramRead_sbytes;
 wire [15:0]sramAddr_sbytes;
 wire sramDump_sbytes;
 wire [2:0]sramDumpNum_sbytes;
 wire [2:0]sramInitNum_sbytes;
 wire sramInit_sbytes;
-wire sramWriteValue_sbytes;
+wire [127:0]sramWriteValue_sbytes;
+
+assign sramDumpNum_sbytes=0;
+assign sramInitNum_sbytes=0;
 
 //mixcolumn sram signals
-wire [127:0]sramWrite_mcol;
+wire sramWrite_mcol;
 wire sramRead_mcol;
 wire [15:0]sramAddr_mcol;
 wire sramDump_mcol;
 wire [2:0]sramDumpNum_mcol;
 wire [2:0]sramInitNum_mcol;
 wire sramInit_mcol;
-wire sramWriteValue_mcol;
+wire [127:0]sramWriteValue_mcol;
+
+assign sramDumpNum_mcol=0;
+assign sramInitNum_mcol=0;
 
 //srows sram signals
-wire [127:0]sramWrite_srows;
+wire sramWrite_srows;
 wire sramRead_srows;
 wire [15:0]sramAddr_srows;
 wire sramDump_srows;
 wire [2:0]sramDumpNum_srows;
 wire [2:0]sramInitNum_srows;
 wire sramInit_srows;
-wire sramWriteValue_srows;
+wire [127:0]sramWriteValue_srows;
+
+assign sramDumpNum_srows=0;
+assign sramInitNum_srows=0;
 
 
 //wire [31:0]HADDR;
@@ -122,13 +149,16 @@ wire sramInit_AMBA;
 
 
 
+wire [3:0]roundnum;
+wire hresp_error;
+wire HCLK_fall;
+wire HCLK_rise;
 
 
 
 
-
-assign sramBigDump=0;
-assign sramBigDumpNum=0;
+//assign sramBigDump=0;/////////////////////////////////////////////////////////////////////////////////////////////////////
+//assign sramBigDumpNum=0;
 assign sramBigInitNum=0;
 assign sramBigInit=0;
 assign sramBigAddr=sramAddr_AMBA|sramAddr_srows|sramAddr_mcol|sramAddr_sbytes|sramAddr_around|sramAddr_keyexp;
@@ -146,7 +176,6 @@ assign sramBigWriteValue=sramWriteValue_AMBA|sramWriteValue_srows|sramWriteValue
 		.mWrite(mWrite),
 		.dataReady(dataReady),
 		.mRead(mRead),
-		//.finished(finished),
 		.keyexp_finished(keyexp_finished),
 		.sbytes_finished(sbytes_finished),
 		.srows_finished(srows_finished),
@@ -188,10 +217,26 @@ assign sramBigWriteValue=sramWriteValue_AMBA|sramWriteValue_srows|sramWriteValue
   		.sramDumpNum(sramDumpNum_keyexp),
   		.sramInitNum(sramInitNum_keyexp)
 	);
-	
-	
 
-	sbyteswrap sbyteswrap
+
+  sbyteswrap sbyteswrap
+  (
+	.clk(clk),
+  .n_rst(n_rst),
+  .sbytes_enable(sbytes_enable),
+  .sbytes_finished(sbytes_finished),
+  .sramread_data(sramBigReadValue),
+	.sramwrite_data(sramWriteValue_sbytes),
+  .sramread(sramRead_sbytes),
+  .sramwrite(sramWrite_sbytes),
+  .sramdump(sramDump_sbytes),
+  .sraminit(sramInit_sbytes),
+  .sramaddr(sramAddr_sbytes),
+  .sramdumpnum(sramDumpNum_sbytes),
+  .sraminitnum(sramInitNum_sbytes)
+  );	
+
+/*	sbyteswrap sbyteswrap
 	(
 	  //INPUTES
 		.clk(clk),
@@ -208,7 +253,10 @@ sramInitNum_sbytes),
 sramInit_sbytes),
 sramWriteValue_sbytes),
 		.sbytes_finished(sbytes_finished)
-	);
+	);*/
+
+
+
 
 	mixcol mixcol
 	(
@@ -216,35 +264,38 @@ sramWriteValue_sbytes),
 	  .clk(clk),
 	  .n_rst(n_rst),
 		.mixcol_enable(mcol_enable),
-sramBigReadValue),
+    .sramReadValue(sramBigReadValue),
 		//OUTPUT
-sramWrite_mcol),
-sramRead_mcol),
-sramAddr_mcol),
-sramDump_mcol),
-sramDumpNum_mcol),
-sramInitNum_mcol),
-sramInit_mcol),
-sramWriteValue_mcol),
+    .sramWrite(sramWrite_mcol),
+    .sramRead(sramRead_mcol),
+    .sramAddr(sramAddr_mcol),
+    .sramDump(sramDump_mcol),
+    .sramDumpNum(sramDumpNum_mcol),
+    .sramInitNum(sramInitNum_mcol),
+    .sramInit(sramInit_mcol),
+    .sramWriteValue(sramWriteValue_mcol),
 		.mixcol_finished(mcol_finished)
 	);
 	
-	shiftrows?????
+	
+
+
+	srows srows
 	(
 	  //INPUT
 	  .clk(clk),
 	  .n_rst(n_rst),
 	  .srows_enable(srows_enable),
-sramBigReadValue),
+    .sramReadValue(sramBigReadValue),
 	  //OUTPUT
-sramWrite_srows),
-sramRead_srows),
-sramAddr_srows),
-sramDump_srows),
-sramDumpNum_srows),
-sramInitNum_srows),
-sramInit_srows),
-sramWriteValue_srows),
+    .sramWrite(sramWrite_srows),
+    .sramRead(sramRead_srows),
+    .sramAddr(sramAddr_srows),
+    .sramDump(sramDump_srows),
+    .sramDumpNum(sramDumpNum_srows),
+    .sramInitNum(sramInitNum_srows),
+    .sramInit(sramInit_srows),
+    .sramWriteValue(sramWriteValue_srows),
 	  .srows_finished(srows_finished)
 	);
 
@@ -277,48 +328,64 @@ sramWriteValue_srows),
   .HTRANS(HTRANS),
   .HWRITE(HWRITE),//high=write, low=read
   .HSELx(HSELx),
-  .HREADY(HREAD),
+  .HREADY(HREADY),
   .addrMatch(addrMatch),
   .mWrite(mWrite),
   .mRead(mRead),
   .dataReady(dataReady),
   .invalid(invalid)
  );
+ 
+  HCLK_edgedet HCK_edgedet
+(
+  .clk(clk),
+  .n_rst(n_rst),
+  .HCLK(HCLK),
+  .HCLK_rise(HCLK_rise),
+  .HCLK_fall(HCLK_fall)
+);
+
 
   AMBA_inout AMBA_inout
   (
-  input wire clk(clk),
-  input wire n_rst(n_rst),
-  input wire writek_enable(readk_enable),//master writing key
-  input wire writed_enable(read_enable),//master writing data
-  input wire readd_enable(write_enable),//master reading data
-  input wire hresp_error(invalid),
-  input wire hready_enable(hready_enable),
-  input wire [127:0] read_data(sramBigReadValue),
-  input wire [127:0] HWDATA(HWDATA),
-  output reg [127:0] HRDATA(HRDATA),
-  output reg [127:0] write_data(sramWriteValue_AMBA),
-  output reg HREADYOUT(HREADYOUT),
-  output reg HRESP(HRESP),
-  output reg read(sramRead_AMBA),
-  output reg write(sramWrite_AMBA),
-  output reg [15:0] addr(sramAddr_AMBA),
-  output reg dump(sramDump_ADDR),
-  output reg [2:0] dumpNum(sramDumpNum_AMBA),
-  output reg [2:0] initNum(sramInitNum_AMBA),
-  output reg init(sramInit_AMBA)
+  .HCLK(HCLK),
+  .HNRST(HNRST),
+  .HCLK_fall(HCLK_fall),
+  .HCLK_rise(HCLK_rise),
+  .clk(clk),
+  .n_rst(n_rst),
+  .writek_enable(readk_enable),//master writing key
+  .writed_enable(read_enable),//master writing data
+  .readd_enable(write_enable),//master reading data
+  .hresp_error(hresp_error),
+  .hready_enable(hready_enable),
+  .read_data(sramBigReadValue),
+  .HWDATA(HWDATA),
+  .HRDATA(HRDATA),
+  .write_data(sramWriteValue_AMBA),
+  .HREADYOUT(HREADYOUT),
+  .HRESP(HRESP),
+  .read(sramRead_AMBA),
+  .write(sramWrite_AMBA),
+  .addr(sramAddr_AMBA),
+  .dump(sramDump_ADDR),
+  .dumpNum(sramDumpNum_AMBA),
+  .initNum(sramInitNum_AMBA),
+  .init(sramInit_AMBA)
   );
 
 
   testing_sram testing_sram
   (
-  input wire read(sramBigReadEnable),
-  input wire write(sramBigWriteEnable),
-  input wire [15:0] addr(sramBigAddr),
-  input wire dump(sramBigDump),
-  input wire [2:0] dumpNum(sramBigDumpNum),
-  input wire [2:0] initNum(sramBigInitNum),
-  input wire init(sramBigInit),
-  input wire [127:0] write_data(sramBigWriteValue),
-  output wire [127:0] read_data(sramBigReadValue)
+  .read(sramBigReadEnable),
+  .write(sramBigWriteEnable),
+  .addr(sramBigAddr),
+  .dump(sramBigDump),
+  .dumpNum(sramBigDumpNum),
+  .initNum(sramBigInitNum),
+  .init(sramBigInit),
+  .write_data(sramBigWriteValue),
+  .read_data(sramBigReadValue)
   );
+  
+endmodule

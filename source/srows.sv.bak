@@ -8,17 +8,140 @@
 
 module srows
 (
-	//input wire clk,
-	//input wire n_rst,
-	input wire [127:0] olddata,
+	input wire clk,
+	input wire n_rst,
+	input wire [127:0] sramReadValue,
 	input wire srows_enable,
 	output reg srows_finished,
-	output reg [127:0] newdata
+	output reg [127:0] sramWriteValue,
+	output reg sramRead,
+	output reg sramWrite,
+	output reg sramDump,
+	output reg sramInit,
+	output reg [15:0] sramAddr,
+	output reg [2:0] sramDumpNum,
+	output reg [2:0] sramInitNum
 );
+	reg [127:0] olddata;
+	reg [127:0] newdata;
+	reg [127:0] nextdata;
+	reg [127:0] currdata;
+	reg activate;
+	reg currfinish;
+	reg nextfinish;
 
-	assign newdata = srows_enable ? {olddata[31:0],olddata[63:40],olddata[39:32],olddata[95:80],olddata[79:64],olddata[127:119],olddata[119:96]} : olddata;
+	typedef enum bit [3:0] {idle, setaddr, readsram1, readagain, shifter, writeaddr, writesram, finito, buff1, buff2} stateType;
+	stateType state, nextstate;
 
-	assign srows_finished = (newdata == olddata) ? 1'b0 : 1'b1;
+	always@(posedge clk, negedge n_rst) begin
+		if(n_rst == 1'b0) begin
+			state <= idle;
+			currfinish <= 0;
+			currdata <= 0;
+		end else begin
+			state <= nextstate;
+			currfinish <= nextfinish;
+			currdata <= nextdata;
+		end
+	end
+
+	assign olddata = sramReadValue;
+	assign sramWriteValue = newdata;
+	assign srows_finished = currfinish;
+
+	always@(state, srows_enable) begin
+		nextstate = state;
+		case(state)
+			idle: begin
+				if(srows_enable) begin
+					nextstate = setaddr;
+				end else begin
+					nextstate = idle;
+				end
+			end
+			setaddr: begin
+				nextstate = readsram1;
+			end
+			readsram1: begin
+				nextstate = readagain;
+			end
+			readagain: begin
+				nextstate = shifter;
+			end
+			shifter: begin
+				nextstate = writeaddr;
+			end
+			writeaddr: begin
+				nextstate = writesram;
+			end
+			writesram: begin
+				nextstate = finito;
+			end
+			finito: begin
+				nextstate = buff1;
+			end
+			buff1: begin
+				nextstate = buff2;
+			end
+			buff2: begin
+				nextstate = idle;
+			end
+			default: begin
+				nextstate = state;
+			end
+		endcase
+	end
+
+	always@(state) begin
+		//sramWriteValue = 1'b0;
+		sramRead = 0;
+		sramWrite = 0;
+		sramDump = 0;
+		sramInit = 0;
+		sramAddr = 0;
+		sramDumpNum = 0;
+		sramInitNum = 0;
+		nextfinish = 1'b0;
+		activate = 1'b0;
+		case(state)
+			idle: begin
+			end
+			setaddr: begin
+				sramAddr = 32;
+			end
+			readsram1: begin
+				sramAddr = 32;
+				sramRead = 1'b1;
+			end
+			readagain: begin
+			end
+			shifter: begin
+				activate = 1'b1;
+			end
+			writeaddr: begin
+				sramAddr = 32;
+			end
+			writesram: begin
+				sramAddr = 32;
+				sramWrite = 1'b1;
+			end
+			finito: begin
+				nextfinish = 1'b1;
+			end
+			buff1: begin
+			end
+			buff2: begin
+			end
+			default: begin
+			end
+		endcase
+	end
+
+	assign newdata = currdata;
+
+	assign nextdata = activate ? {olddata[127:96],olddata[87:64],olddata[95:88],olddata[47:32],olddata[63:48],olddata[7:0],olddata[31:8]} : currdata;
+
+//	assign srows_finished = (newdata == olddata) ? 1'b0 : 1'b1;
 /*
 	always@(posedge clk, negedge n_rst) begin
 		if(n_rst == 1'b0) begin

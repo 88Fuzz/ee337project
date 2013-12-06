@@ -83,9 +83,9 @@ initial begin
   tb_realInitNum=0;
   tb_writek_enable=0;
   tb_writed_enable=0;
-  readd_enable=0;
-  hresp_error=0;
-  hready_enable=0;
+  tb_readd_enable=0;
+  tb_hresp_error=0;
+  tb_hready_enable=0;
   #(WAIT);
   tb_n_rst=0;
   #(WAIT*3);
@@ -156,6 +156,7 @@ initial begin
   tb_writed_enable=1;
   @(posedge tb_sramWrite);
   tb_writed_enable=0;
+  #(WAIT/2);
   if(tb_sramAddr==32)
     $display("data write address correct");
   else
