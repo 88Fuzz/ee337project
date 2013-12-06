@@ -22,6 +22,11 @@ module tb_srows();
 	reg [2:0] tb_sramDumpNum;
 	reg [2:0] tb_sramInitNum;
 
+	reg otherdump;
+	reg otherinit;
+	reg [2:0] otherdumpnum;
+	reg [2:0] otherinitnum;
+
 	srows DUT
 	(
 		.clk(tb_clk),
@@ -39,6 +44,19 @@ module tb_srows();
 		.sramInitNum(tb_sramInitNum)
 	);
 
+	testing_sram test
+	(
+		.read(tb_sramRead),
+		.write(tb_sramWrite),
+		.addr(tb_sramAddr),
+		.dump(otherdump),
+		.dumpNum(otherdumpnum),
+		.initNum(otherinitnum),
+		.init(otherinit),
+		.write_data(tb_sramWriteV),
+		.read_data(tb_sramReadV)
+	);
+
 	always begin
 		#5ns
 		tb_clk = !tb_clk;
@@ -48,21 +66,27 @@ module tb_srows();
 		tb_srows_enable = 1'b1;
 		tb_clk = 1'b0;
 		tb_n_rst = 1'b1;
-		tb_sramReadV = '0;
+		otherinitnum = 1;
+		otherdumpnum = 2;
+		otherdump = 0;
+		//tb_sramReadV = '0;
 
 		#20ns
+		otherinit = 1;
 		tb_n_rst = 1'b0;
 		#10ns
+		otherinit = 0;
 		tb_n_rst = 1'b1;
 
-		#100ns
+		#80ns
 		tb_srows_enable = 1'b0;
+		otherdump = 1;
 	end
 
-	always@(tb_sramAddr) begin
+	/*always@(tb_sramAddr) begin
 		if(tb_sramAddr == 32) begin
 			tb_sramReadV = 128'h112233445566778899AABBCCDDEEFF00;
 		end
-	end
+	end*/
 
 endmodule

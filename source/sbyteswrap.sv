@@ -26,7 +26,7 @@ module sbyteswrap
 	input wire [127:0]sramread_data 
 );
 
-	typedef enum bit [5:0] {idle,readsram1,readsram2,readsram3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, writesram1, writesram2, finito} stateType;
+	typedef enum bit [5:0] {idle,readsram1,readsram2,readsram3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, writesram1, writesram2, buff1, buff2, finito} stateType;
   stateType state, nextstate;
 
 	reg [7:0] datasend;
@@ -214,6 +214,14 @@ module sbyteswrap
 			  nextstate = finito; 
 			end 
 			finito:
+			begin
+				nextstate = buff1;
+			end
+			buff1:
+			begin
+				nextstate = buff2;
+			end
+			buff2:
 			begin
 				nextstate = idle;
 			end
