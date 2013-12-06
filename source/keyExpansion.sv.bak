@@ -56,8 +56,8 @@ G gggg(
               );*/
                       //0        1              2           3                  4    5    6   7       8     9
 typedef enum bit[4:0] {IDLE, READSRAM1, READSRAMELSEADDR, READSRAMELSE, CHECKROUND, G, XOR1, XOR2, XOR3, XOR4,
-  //                      10    11         12     13           14
-                         DONE, PREPG, WRITESRAM, PREPSRAM, READSRAM1AGAIN} stateType;//will need states for loading and unloading SRAM
+  //                      10    11         12     13           14           15     16     17     18
+                         DONE, PREPG, WRITESRAM, PREPSRAM, READSRAM1AGAIN, BUFF1, BUFF2, BUFF3, BUFF4} stateType;//will need states for loading and unloading SRAM
 stateType currState, nextState;
 
 
@@ -314,6 +314,62 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       nextNewKey=currNewKey;
       gEnter=0;
     end
+    BUFF1: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;//probably need a new state for this after everything has been stored in sram
+      g_enable=0;
+      nextNewKey=currNewKey;
+      gEnter=0;
+    end
+    BUFF2: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;//probably need a new state for this after everything has been stored in sram
+      g_enable=0;
+      nextNewKey=currNewKey;
+      gEnter=0;
+    end
+    BUFF3: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;//probably need a new state for this after everything has been stored in sram
+      g_enable=0;
+      nextNewKey=currNewKey;
+      gEnter=0;
+    end
+    BUFF4: begin
+      sramWriteValue=0;
+      sramRead=0;
+      sramWrite=0;
+      sramDump=0;
+      sramInit=0;
+      sramAddr=0;
+      sramDumpNum=0;
+      sramInitNum=0;
+      expansionDone=0;//probably need a new state for this after everything has been stored in sram
+      g_enable=0;
+      nextNewKey=currNewKey;
+      gEnter=0;
+    end
     default: begin//same as IDLE
       sramWriteValue=0;
       sramRead=0;
@@ -391,6 +447,12 @@ always @ (currState, enable, roundNum, g_done) begin
       nextState=DONE;
     end*/
     DONE: begin
+      nextState=BUFF1;
+    end
+    BUFF1: begin
+      nextState=BUFF2;
+    end
+    BUFF2: begin
       nextState=IDLE;
     end
     default: begin

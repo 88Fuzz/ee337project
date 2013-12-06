@@ -24,7 +24,11 @@ module aroundwrap
 	input wire [127:0]sramread_data 
 );
 
-	typedef enum bit [7:0] {idle,readsramkey1, readsramkey2, readsramkey3, readsramdata1 , readsramdata2, readsramdata3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, byte16s, byte16c, writesram1, writesram2, finito}stateType;
+	typedef enum bit [7:0] {idle,readsramkey1, readsramkey2, readsramkey3, readsramdata1 , readsramdata2,
+	                readsramdata3, byte1s, byte1c, byte2s, byte2c, byte3s, byte3c, byte4s, byte4c, byte5s, 
+	                byte5c, byte6s, byte6c, byte7s, byte7c, byte8s, byte8c, byte9s, byte9c, byte10s, byte10c, 
+	                byte11s, byte11c, byte12s, byte12c, byte13s, byte13c, byte14s, byte14c, byte15s, byte15c, 
+	                byte16s, byte16c, writesram1, writesram2, finito, BUFF1, BUFF2}stateType;
 	stateType state, nextstate;
 
 	reg [127:0] datahold;
@@ -236,8 +240,16 @@ module aroundwrap
 			end    
 			finito:
 			begin
-				nextstate = idle;
+				nextstate = BUFF1;
 			end
+			BUFF1:
+			begin
+			  nextstate=BUFF2;
+			end
+			BUFF2:
+			begin
+			  nextstate=idle;
+		  end
 			default:
 			begin
 			  nextstate = idle;
@@ -977,6 +989,40 @@ module aroundwrap
 				datasend = 0;
 				nextNewData = currNewData ;
 				around_finished = 1'b1;
+			end
+			
+			BUFF1: begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0;
+			  nextsubkey = currsubkey; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				keysend = 0;
+				datasend = 0;
+				nextNewData = currNewData ;
+			end
+			
+			BUFF2: begin
+			  sramread = 0;
+			  sramwrite = 0;
+			  sramaddr = 0;
+			  sramdump = 0; 
+			  sramdumpnum = 0; 
+			  sraminitnum = 0; 
+			  sraminit = 0;
+			  sramwrite_data = 0;
+			  nextsubkey = currsubkey; 
+			  nextolddata = currolddata; 
+				smallenable = 0;
+				keysend = 0;
+				datasend = 0;
+				nextNewData = currNewData ;
 			end
 			
 			default: 
