@@ -166,7 +166,8 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       sramDumpNum=0;
       sramInitNum=0;
       expansionDone=0;
-      gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
+      //gEnter=sramReadValue[127:96];//THIS MAY BE BACKWARDS                                         MOVE THIS PLACES
+      gEnter=sramReadValue[31:0];
       g_enable=0;
       nextNewKey=currNewKey;
     end
@@ -197,7 +198,7 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       expansionDone=0;
       g_enable=1;
       nextNewKey=currNewKey;
-      gEnter=sramReadValue[127:96];
+      gEnter=sramReadValue[31:0];//gEnter=sramReadValue[127:96];
     end
     XOR1: begin
       sramWriteValue=0;
@@ -210,7 +211,8 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       sramInitNum=0;
       expansionDone=0;
 //      newKey[31:0]=oldKey[31:0]^gReturn;
-      nextNewKey={sramReadValue[127:32],sramReadValue[31:0]^gReturn};//////////////////////////////////
+      //nextNewKey={sramReadValue[127:32],sramReadValue[31:0]^gReturn};//////////////////////////////////
+      nextNewKey={sramReadValue[127:96]^gReturn,sramReadValue[95:0]};
       g_enable=0;
       gEnter=0;
     end
@@ -225,7 +227,8 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       sramInitNum=0;
       expansionDone=0;
       //newKey[63:32]=oldKey[63:32]^newKey[31:0];
-      nextNewKey={sramReadValue[127:64],sramReadValue[63:32]^currNewKey[31:0],currNewKey[31:0]};
+      //nextNewKey={sramReadValue[127:64],sramReadValue[63:32]^currNewKey[31:0],currNewKey[31:0]};
+      nextNewKey={currNewKey[127:96],currNewKey[127:96]^sramReadValue[95:64],sramReadValue[63:0]};
       g_enable=0;
       gEnter=0;
     end
@@ -240,7 +243,8 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       sramInitNum=0;
       expansionDone=0;
 //      newKey[95:64]=oldKey[95:64]^newKey[63:32];
-      nextNewKey={sramReadValue[127:96],sramReadValue[95:64]^currNewKey[63:32],currNewKey[63:0]};
+      //nextNewKey={sramReadValue[127:96],sramReadValue[95:64]^currNewKey[63:32],currNewKey[63:0]};
+      nextNewKey={currNewKey[127:64],currNewKey[95:64]^sramReadValue[63:32], sramReadValue[31:0]};
       g_enable=0;
       gEnter=0;
     end
@@ -255,7 +259,8 @@ always@(currState, currNewKey, sramReadValue, gReturn)begin
       sramInitNum=0;
       expansionDone=0;
       //newKey[127:96]=oldKey[127:96]^newKey[95:64];
-      nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[95:0]};
+      //nextNewKey={sramReadValue[127:96]^currNewKey[95:64],currNewKey[95:0]};
+      nextNewKey={currNewKey[127:32], currNewKey[63:32]^sramReadValue[31:0]};
       g_enable=0;
       gEnter=0;
     end

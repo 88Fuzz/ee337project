@@ -139,7 +139,12 @@ module srows
 
 	assign newdata = currdata;
 
-	assign nextdata = activate ? {olddata[127:96],olddata[87:64],olddata[95:88],olddata[47:32],olddata[63:48],olddata[7:0],olddata[31:8]} : currdata;
+	//assign nextdata = activate ? {olddata[127:96],olddata[87:64],olddata[95:88],olddata[47:32],olddata[63:48],olddata[7:0],olddata[31:8]} : currdata;
+	
+	assign nextdata = activate ? {olddata[127:120],olddata[87:80],olddata[47:40],olddata[7:0],
+	                              olddata[95:88],olddata[55:48],olddata[15:8],olddata[103:96],
+	                              olddata[63:56],olddata[23:16],olddata[111:104],olddata[71:64],
+	                              olddata[31:24],olddata[119:112],olddata[79:72],olddata[39:32]} : currdata;
 
 //	assign srows_finished = (newdata == olddata) ? 1'b0 : 1'b1;
 /*

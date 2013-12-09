@@ -30,7 +30,7 @@ module srows
 	reg currfinish;
 	reg nextfinish;
 
-	typedef enum bit [3:0] {idle, setaddr, readsram1, readagain, shifter, writeaddr, writesram, finito, buff1, buff2} stateType;
+	typedef enum bit [3:0] {setaddr, idle, readsram1, readagain, shifter, writeaddr, writesram, finito, buff1, buff2} stateType;
 	stateType state, nextstate;
 
 	always@(posedge clk, negedge n_rst) begin
