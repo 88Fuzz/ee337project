@@ -32,6 +32,7 @@ module mixcol
 	reg activate;
 	reg currfinish;
 	reg nextfinish;
+	reg zerosram;
 
 	typedef enum bit [3:0] {setaddr, idle, readsram1, readagain, mixer, writeaddr, writesram, finito, buff1, buff2} stateType;
 	stateType state, nextstate;
@@ -50,7 +51,7 @@ module mixcol
 
 	assign swapdata = sramReadValue;
 	assign olddata = {swapdata[127:120], swapdata[95:88], swapdata[63:56], swapdata[31:24], swapdata[119:112], swapdata[87:80], swapdata[55:48], swapdata[23:16], swapdata[111:104], swapdata[79:72], swapdata[47:40], swapdata[15:8], swapdata[103:96], swapdata[71:64], swapdata[39:32], swapdata[7:0]};
-	assign sramWriteValue = {newdata[127:120], newdata[95:88], newdata[63:56], newdata[31:24], newdata[119:112], newdata[87:80], newdata[55:48], newdata[23:16], newdata[111:104], newdata[79:72], newdata[47:40], newdata[15:8], newdata[103:96], newdata[71:64], newdata[39:32], newdata[7:0]};
+	assign sramWriteValue = zerosram ? 0 : {newdata[127:120], newdata[95:88], newdata[63:56], newdata[31:24], newdata[119:112], newdata[87:80], newdata[55:48], newdata[23:16], newdata[111:104], newdata[79:72], newdata[47:40], newdata[15:8], newdata[103:96], newdata[71:64], newdata[39:32], newdata[7:0]};
 //	assign sramWriteValue = newdata;
 	assign mixcol_finished = currfinish;
 
@@ -108,6 +109,7 @@ module mixcol
 		sramInitNum = 0;
 		nextfinish = 1'b0;
 		activate = 1'b0;
+		zerosram=1;
 		case(state)
 			idle: begin
 			end
@@ -125,10 +127,12 @@ module mixcol
 			end
 			writeaddr: begin
 				sramAddr = 32;
+				zerosram=0;
 			end
 			writesram: begin
 				sramAddr = 32;
 				sramWrite = 1'b1;
+				zerosram=0;
 			end
 			finito: begin
 				nextfinish = 1'b1;
