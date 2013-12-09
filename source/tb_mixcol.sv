@@ -55,13 +55,13 @@ module tb_mixcol();
 		#10ns
 		tb_n_rst = 1'b1;
 		//tb_olddata = 128'hd4e0b81ebfb441275d52119830aef1e5;
-		//#120ns
-		//tb_mixcol_enable = 1'b0;
+		#120ns
+		tb_mixcol_enable = 1'b0;
 	end
 
 	always@(tb_sramAddr) begin
 		if(tb_sramAddr == 32) begin
-			tb_sramReadV = 128'hc601f2dbc6010a13c6012253c6015c45;
+			tb_sramReadV = 128'hd4bf5d30e0b452aeb84111f11e2798e5;//						   hc601f2dbc6010a13c6012253c6015c45;
 		end
 	end
 

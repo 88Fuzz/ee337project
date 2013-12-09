@@ -27,6 +27,8 @@ module mixcol
 	reg [127:0] newdata;
 	reg [127:0] nextdata;
 	reg [127:0] currdata;
+	reg [127:0] swapdata;
+	
 	reg activate;
 	reg currfinish;
 	reg nextfinish;
@@ -46,8 +48,10 @@ module mixcol
 		end
 	end
 
-	assign olddata = sramReadValue;
-	assign sramWriteValue = newdata;
+	assign swapdata = sramReadValue;
+	assign olddata = {swapdata[127:120], swapdata[95:88], swapdata[63:56], swapdata[31:24], swapdata[119:112], swapdata[87:80], swapdata[55:48], swapdata[23:16], swapdata[111:104], swapdata[79:72], swapdata[47:40], swapdata[15:8], swapdata[103:96], swapdata[71:64], swapdata[39:32], swapdata[7:0]};
+	assign sramWriteValue = {newdata[127:120], newdata[95:88], newdata[63:56], newdata[31:24], newdata[119:112], newdata[87:80], newdata[55:48], newdata[23:16], newdata[111:104], newdata[79:72], newdata[47:40], newdata[15:8], newdata[103:96], newdata[71:64], newdata[39:32], newdata[7:0]};
+//	assign sramWriteValue = newdata;
 	assign mixcol_finished = currfinish;
 
 	always@(state, mixcol_enable) begin
