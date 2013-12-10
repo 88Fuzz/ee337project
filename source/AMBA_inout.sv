@@ -51,8 +51,11 @@ testing_sram SexyRandomAccessMemory
 
 reg currHREADYOUT;
 reg nextHREADYOUT;
+reg [127:0]currHRDATA;
+reg [127:0]nextHRDATA;
 
 assign HREADYOUT=currHREADYOUT;
+assign HRDATA=currHRDATA;
 
 //                      0            1      2       3             4
 typedef enum bit[3:0] {WRITEKSETUP, IDLE, WRITEK, WRITEDSETUP, WRITED,
@@ -66,9 +69,11 @@ always @(posedge clk, negedge n_rst) begin
   if(n_rst==0) begin
     currState<=IDLE;
     currHREADYOUT<=1;
+    currHRDATA<=0;
   end else begin
     currState<=nextState;
     currHREADYOUT<=nextHREADYOUT;
+    currHRDATA<=nextHRDATA;
   end
 end
 
@@ -80,9 +85,10 @@ always @ (currState, currHREADYOUT, HWDATA, read_data) begin
   initNum=0;
   dump=0;
   init=0;
-  HRDATA=0;
+  //HRDATA=0;
   HRESP=0;
   nextHREADYOUT=currHREADYOUT;
+  nextHRDATA=currHRDATA;
   write_data=0;
   case(currState)
     IDLE: begin
@@ -115,7 +121,7 @@ always @ (currState, currHREADYOUT, HWDATA, read_data) begin
       addr=32;
     end
     DISPLAYD: begin
-      HRDATA=read_data;
+      nextHRDATA=read_data;
     end
     ERROR: begin
       HRESP=1;
@@ -175,13 +181,16 @@ always @(currState, writek_enable, writed_enable, readd_enable, hresp_error, hre
       nextState=IDLE;
     end
     WRITEDSETUP: begin
-      nextState=WRITED;
+        nextState=WRITED;
     end
     WRITED: begin
       nextState=IDLE;
     end
     READDSETUP: begin
-      nextState=READD;
+      if(HCLK_rise)
+        nextState=READD;
+      else
+        nextState=currState;
     end
     READD: begin//probably have to wait until the AMBA clock goes high/low
       nextState=DISPLAYD;

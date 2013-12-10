@@ -4,7 +4,7 @@ module tb_AES();
 
 localparam HCLKPERIOD=100;
 localparam CLKPERIOD=10;
-localparam WAIT=5;
+localparam WAIT=CLKPERIOD/2;
 
 reg tb_clk;
 reg tb_n_rst;
@@ -134,23 +134,27 @@ begin
   tb_HSIZE=3'b100;
   tb_HBURST=3'b000;
   tb_HTRANS=2'b10;
-  #(WAIT);
+  #(WAIT/4);
   
   tb_HSELx=1;
-  @(posedge tb_HCLK);
+  //@(posedge tb_HCLK);
   #(WAIT);
+  
+  
+  
+  @(posedge tb_HCLK);
+  
   if(tb_RESP==0)
     $display("design accepts AMBA everything correctly");
   else
     $error("design accepts AMBA everything incorrectly");
   
-  
   tb_HWDATA=128'h2B_7E_15_16_28_AE_D2_A6_AB_F7_15_88_09_CF_4F_3C;
-  #(WAIT);
+  #(WAIT/4);
   tb_HREADY=1;
   #(WAIT*2);
   tb_HREADY=0;
-  
+  tb_HSELx=0;
   
   @(negedge tb_HREADYOUT);
   tb_sramBigDump=1;
@@ -168,19 +172,49 @@ begin
   
   tb_HSELx=1;
   #(WAIT);
-  tb_HSELx=0;
+  
+  
+  @(posedge tb_HCLK);
   
   tb_HWDATA=128'h32_43_F6_A8_88_5A_30_8D_31_31_98_A2_E0_37_07_34;
-  #(WAIT);
+  #(WAIT/4);
   tb_HREADY=1;
   #(WAIT*2);
   tb_HREADY=0;
+  tb_HSELx=0;
   
+  //data is encrypted
   @(negedge tb_HREADYOUT);
-  tb_sramBigDump=1;
+  $display("HERE");
+  
+  @(posedge tb_HCLK);
+  tb_HADDR=32'hF0_F0_F0_F0;
+  tb_HSIZE=3'b100;
+  tb_HBURST=3'b000;
+  tb_HTRANS=2'b10;
+  tb_HWRITE=0;
+  
+  #(WAIT/4);
+  
+  tb_HSELx=1;
   #(WAIT);
-  tb_sramBigDump=0;
-  #(WAIT);
+  
+  @(negedge tb_clk);
+  tb_HREADY=1;
+  #(WAIT*2);
+  tb_HREADY=0;
+  tb_HSELx=0;
+  
+  
+  
+  
+  
+//  tb_sramBigDump=1;
+//  #(WAIT);
+//  tb_sramBigDump=0;
+//  #(WAIT);
+  
+  
   
   
 end
