@@ -51,8 +51,8 @@ testing_sram SexyRandomAccessMemory
 
 reg currHREADYOUT;
 reg nextHREADYOUT;
-reg currHRDATA;
-reg nextHRDATA;
+reg [127:0]currHRDATA;
+reg [127:0]nextHRDATA;
 
 assign HREADYOUT=currHREADYOUT;
 assign HRDATA=currHRDATA;
