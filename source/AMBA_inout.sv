@@ -77,7 +77,7 @@ always @(posedge clk, negedge n_rst) begin
   end
 end
 
-always @ (currState, currHREADYOUT, HWDATA, read_data) begin
+always @ (currState, currHREADYOUT, currHRDATA, HWDATA, read_data) begin
   read=0;
   write=0;
   addr=0;

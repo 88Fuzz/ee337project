@@ -36,7 +36,7 @@ module AMBA_inout
 //reg [2:0]initNum;
 //reg init;
 
-testing_sram SexyRandomAccessMemory
+/*testing_sram SexyRandomAccessMemory
 (
   .read(read),
   .write(write),
@@ -47,7 +47,7 @@ testing_sram SexyRandomAccessMemory
   .init(init),
   .write_data(write_data),
   .read_data(read_data)
-);
+);*/
 
 reg currHREADYOUT;
 reg nextHREADYOUT;
