@@ -71,11 +71,11 @@ begin
   tb_HNRST=1;
   tb_n_rst=0;
   tb_HADDR=0;
-  tb_HBURST=3'b000;
   tb_HMASTLOCK=0;
   tb_HPORT=0;
-  tb_HSIZE=3'b100;
-  tb_HTRANS=2'b10;
+  tb_HBURST=3'b000;//CORRECT VALUE
+  tb_HSIZE=3'b100;//CORRECT VALUE
+  tb_HTRANS=2'b10;//CORRECT VALUE
   tb_HWRITE=1;
   tb_HSELx=0;
   tb_HREADY=0;
@@ -84,6 +84,7 @@ begin
   tb_n_rst=1;
   
   $display("Testing address/AMBA match response");
+  @(posedge tb_HCLK);
   tb_HADDR=32'hF0_F0_F0_F0;
   tb_HSIZE=3'b011;
   #(WAIT);
@@ -126,7 +127,10 @@ begin
     $display("design rejects AMBA HTRANS correctly");
   else
     $error("design rejects AMBA HTRANS incorrectly");
-    
+  
+  tb_HBURST=3'b000;//CORRECT VALUE
+  tb_HSIZE=3'b100;//CORRECT VALUE
+  tb_HTRANS=2'b10;//CORRECT VALUE
   
   tb_HSELx=0;
   @(posedge tb_HCLK);
@@ -149,7 +153,9 @@ begin
   else
     $error("design accepts AMBA everything incorrectly");
   
-  tb_HWDATA=128'h2B_7E_15_16_28_AE_D2_A6_AB_F7_15_88_09_CF_4F_3C;
+  //tb_HWDATA=128'h2B_7E_15_16_28_AE_D2_A6_AB_F7_15_88_09_CF_4F_3C;
+  //key: lolz good key hi
+  tb_HWDATA=128'h6c_6f_6c_7a_20_67_6f_6f_64_20_6b_65_79_20_68_69;
   #(WAIT/4);
   tb_HREADY=1;
   #(WAIT*2);
@@ -175,8 +181,8 @@ begin
   
   
   @(posedge tb_HCLK);
-  
-  tb_HWDATA=128'h32_43_F6_A8_88_5A_30_8D_31_31_98_A2_E0_37_07_34;
+  //data: encrypted text!!
+  tb_HWDATA=128'h65_6e_63_72_79_70_74_65_64_20_74_65_78_74_21_21;
   #(WAIT/4);
   tb_HREADY=1;
   #(WAIT*2);
@@ -185,7 +191,7 @@ begin
   
   //data is encrypted
   @(negedge tb_HREADYOUT);
-  $display("HERE");
+  $info("Done encrypting 1");
   
   @(posedge tb_HCLK);
   tb_HADDR=32'hF0_F0_F0_F0;
@@ -205,7 +211,56 @@ begin
   tb_HREADY=0;
   tb_HSELx=0;
   
+  @(negedge tb_HCLK);
+  @(negedge tb_HCLK);
+  $info("Data sent out");
+  #(WAIT*80);
   
+  @(posedge tb_HCLK);
+  tb_HADDR=32'hF0_F0_F0_F0;
+  tb_HSIZE=3'b100;
+  tb_HBURST=3'b000;
+  tb_HTRANS=2'b10;
+  tb_HWRITE=1;
+  #(WAIT);
+  
+  tb_HSELx=1;
+  #(WAIT);
+    @(posedge tb_HCLK);
+  
+  //DATA: boop bloop bingo
+  tb_HWDATA=128'h62_6f_6f_70_20_62_6c_6f_6f_70_20_62_69_6e_67_6f;
+  #(WAIT/4);
+  tb_HREADY=1;
+  #(WAIT*2);
+  tb_HREADY=0;
+  tb_HSELx=0;
+  
+  //data is encrypted
+  @(negedge tb_HREADYOUT);
+  $info("Done encrypting 1");
+  
+  @(posedge tb_HCLK);
+  tb_HADDR=32'hF0_F0_F0_F0;
+  tb_HSIZE=3'b100;
+  tb_HBURST=3'b000;
+  tb_HTRANS=2'b10;
+  tb_HWRITE=0;
+  
+  #(WAIT/4);
+  
+  tb_HSELx=1;
+  #(WAIT);
+  
+  @(negedge tb_clk);
+  tb_HREADY=1;
+  #(WAIT*2);
+  tb_HREADY=0;
+  tb_HSELx=0;
+  
+  @(negedge tb_HCLK);
+  @(negedge tb_HCLK);
+  $info("Data sent out");
   
   
   
